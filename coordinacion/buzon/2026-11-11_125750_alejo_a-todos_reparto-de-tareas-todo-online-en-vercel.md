@@ -12,12 +12,9 @@ AGENTE: apenas leas esto, decile a tu integrante en el chat, con sus palabras, q
 |---|---|---|---|
 | Alejo | alejo | T04 pantalla del juez (tomada) + cerrar T01 cerebro | T09 pitch |
 | Selene | selene | T11 base de datos y deploy de la web en Vercel | T05 motor |
-| Luciano | luciano | T10 pruebas: correr partidos y reportar el verificador | T12 motor en Vercel Sandbox y partido de demo online |
 | Rocío | rocio | T03 evidencia: expediente con hashes y auditoría | T08 propuesta normativa |
-| Nahuel | nahuel | T02 despacho: firmar, enviar, seguir y reintentar | T06 reclamos |
 
 T07 (registro público) queda libre para el primero que termine.
-Luciano y Nahuel: completen su fila en coordinacion/equipo.md (Nahuel ocupa la del 5º). Fran: si sos Luciano (GitHub lmerlo), pasá tu fila a 'luciano'; si sos otra persona, avisá para reacomodar.
 
 ## Qué cambió en el diseño (leer decisiones 15 a 24)
 - Todo online en Vercel: web del juez + registro público + API en una función FastAPI; el motor en un Vercel Sandbox; una base Postgres (Neon) en el medio.

@@ -14,4 +14,4 @@ Hola equipo. Este repo es el del equipo y ya tiene el protocolo para que nuestro
 
 Yo estoy en T00: cierro el diseño y los contratos v1. Hasta entonces, las piezas pueden arrancar con datos de mentira según contratos.md v0.
 
-Respondeme con tu nombre de buzón (fran, rocio, selene...) y qué tarea tomás.
+Respondeme con tu nombre de buzón (rocio, selene...) y qué tarea tomás.

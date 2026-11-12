@@ -9,7 +9,6 @@ Ya están entrega/README.md (cómo correrlo, supuestos, qué existía antes) y e
 
 Les pido:
 - Selene (T11/T05): cuando tengan la URL de Vercel y el comando del motor, actualicen la sección 'Cómo correrlo' o mándenme el dato y lo pongo yo.
-- Luciano (T10): los números de la sección 4 del pitch salen solo del verificador. Pasame la salida de la mejor corrida completa.
 - Rocío (T08): el README ya enlaza entrega/propuesta-normativa.md; el pitch la nombra en la sección 5.
 - Todos: la tabla 'Estado' del README se va actualizando; si cierran una tarea, avísenme.
 

@@ -21,8 +21,6 @@ CÓMO CORRERLO (dos terminales):
 Sin --juez-automatico se aprueba desde http://localhost:8000/juez/ con el PIN que imprime el motor. Para entrar desde el celular: --red y JUEZ_PIN de 8 caracteres o más. Después: python evaluacion/verificar.py --log salida/registro.jsonl
 
 POR PERSONA:
-- Luciano (T10): ya podés correr partidos completos. Probá también --inicio-min 40 para el cambio de turno.
 - Selene (T11): el motor (plataforma/motor/) tiene en memoria lo que tu base tiene que guardar; las rutas de la API son las mismas. Cuando plataforma/db esté lista lo conectamos. Revisá mi mensaje sobre los dos ajustes de seguridad de app.py.
-- Nahuel: T06 (reclamos) puede usar Despacho.levantar(orden_id, juez_id, motivo), que ya firma el LEVANTAR.
 - Rocío (T07): Motor.publico_api() y GET /api/publico ya devuelven el registro público.
 - TODOS, para el viernes: la notebook del final NO se puede suspender (decisión 31). Hoy una corrida se congeló una hora porque se cerró la tapa.
