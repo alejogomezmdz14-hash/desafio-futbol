@@ -147,4 +147,4 @@ Dos corridas del partido de práctica. Cada una tiene su evidencia (expediente c
 - `expediente-final.json` y `auditoria-final.jsonl`: exportados del partido final (T03).
 
 ## Equipo
-Alejo, Selene, Luciano, Rocío y Nahuel. Quién hizo qué está en [`coordinacion/equipo.md`](../coordinacion/equipo.md) y en el historial de `coordinacion/tareas/`.
+Alejo, Selene y Rocío. Quién hizo qué está en [`coordinacion/equipo.md`](../coordinacion/equipo.md) y en el historial de `coordinacion/tareas/`.

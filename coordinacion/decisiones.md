@@ -57,7 +57,7 @@ Se agregan abajo, con fecha y quién decidió. No se borran: si una cambia, se a
 35. **`--exportar-entrega` escribe en `entrega/<partido_id>/`**, así el viernes queda `entrega/<id del final>/` sin pisar las corridas de práctica.
 
 ## 2026-11-11 — alejo (deploy público y demo online)
-36. **El proyecto de Vercel queda en la cuenta de Alejo** (`desafio-futbol`), con la base Neon en São Paulo (`gru1`). Luciano y Nahuel no aparecieron, y Selene ya había dejado `plataforma/db` y `plataforma/api` listos: el deploy lo cerró Alejo para no depender de una cuenta ajena. El `JUEZ_PIN` está cargado en Vercel y nunca va al repo.
+36. **El proyecto de Vercel queda en la cuenta de Alejo** (`desafio-futbol`), con la base Neon en São Paulo (`gru1`). Dos integrantes inscriptos no participaron, y Selene ya había dejado `plataforma/db` y `plataforma/api` listos: el deploy lo cerró Alejo para no depender de una cuenta ajena. El `JUEZ_PIN` está cargado en Vercel y nunca va al repo.
 37. **Partido de demo online (T12):** `POST /api/demo/iniciar` (con PIN) prende un Vercel Sandbox que clona `main`, instala `requirements.txt` y corre `python -m plataforma.nube.partido_demo` (simulador de práctica + motor con `--base`). La web muestra el partido como cualquier otro, y al terminar guarda la salida de `verificar.py` en `verificaciones`. La página es `/juez/demo.html`. Un solo partido a la vez; velocidad entre x6 y x30 para que entre en la sesión de 45 minutos.
 
 ## 2026-11-12 — alejo (login con token que vence)

@@ -47,7 +47,7 @@ vercel env pull .env.local         # trae DATABASE_URL y JUEZ_PIN a tu máquina
 ```
 
 - `.env` y `.env.*` están en el `.gitignore`. **Nunca** pegues la `DATABASE_URL` en el repo, en el buzón ni en un mensaje del grupo.
-- Para pasársela a otro integrante (Luciano para el Sandbox, quien corra el motor en la notebook): por privado, o mejor, que cada uno haga `vercel env pull` si le das acceso.
+- Para pasársela a otro integrante (quien maneje el Sandbox o corra el motor en la notebook): por privado, o mejor, que cada uno haga `vercel env pull` si le das acceso.
 
 ## Paso 4 — Archivos de configuración (en la raíz del repo)
 
@@ -254,7 +254,7 @@ Con el repo conectado, cada push a `main` despliega solo. **Redeploys chicos y s
 - **A `todos`:** la URL pública y cómo apuntar el motor a la base (`DATABASE_URL` + `python -m plataforma.motor`).
 - **A `alejo` (T04):** que la semilla está cargada, la URL de `/juez/` y el PIN de demo (por privado, no por el buzón).
 - **A `rocio` (T03):** que la auditoría se guarda con `agregar_auditoria` / `ultimo_evento_auditoria`. Ella calcula el hash y vos lo guardás.
-- **A `luciano` (T12):** cómo le llega `DATABASE_URL` al Sandbox (por `env` al crearlo, desde la propia app de Vercel) y dónde guardar la salida del verificador (`verificaciones`).
+- **Para T12 (Sandbox):** cómo le llega `DATABASE_URL` al Sandbox (por `env` al crearlo, desde la propia app de Vercel) y dónde guardar la salida del verificador (`verificaciones`).
 
 ## Errores típicos
 

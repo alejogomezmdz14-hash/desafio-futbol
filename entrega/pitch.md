@@ -73,7 +73,7 @@ Va con las **7 diapositivas** del deck [El VAR de la piratería](https://claude.
 ### Diapositiva 7 · Quién paga y cierre (2:35–3:00)
 **En pantalla:** "Hoy la piratería juega sin árbitro. Nosotros le pusimos uno." Abajo, el link de la plataforma.
 > "Lo paga el que pierde la plata: los dueños de los derechos del fútbol. Para el juez y para las empresas de internet es gratis. Para arrancar alcanza con un partido de prueba de la liga.
-> Hoy la piratería juega sin árbitro. Nosotros le pusimos uno: rápido, justo, y que llega a todos. Somos Alejo, Selene, Luciano, Rocío y Nahuel."
+> Hoy la piratería juega sin árbitro. Nosotros le pusimos uno: rápido, justo, y que llega a todos. Somos Alejo, Selene y Rocío."
 
 ### Lo que quedó afuera del pitch (va en el video de demo o en las preguntas)
 - El canal con derechos que la plataforma no bloquea (Canal Norte).
@@ -110,7 +110,7 @@ Una persona maneja el celular del juez, proyectado. Otra muestra el registro y e
 > "Lo paga quien pierde la plata: los titulares de derechos, que según la industria pierden cientos de millones de dólares por año solo en Argentina. El mismo problema está en Perú, México y Colombia. El juez y los proveedores lo usan sin costo. El software nunca fue lo caro: en Italia los proveedores reclaman unos 10 millones de euros por año de trabajo manual. A nosotros vigilar un partido nos cuesta centavos de dólar de nube, según nuestra estimación. Para arrancar alcanza con un piloto en un partido de la liga y una resolución del ENACOM que obligue a cada proveedor a tener un canal electrónico de órdenes. Está en nuestra propuesta normativa y en `escenarios-y-modelo.md`."
 
 ### 6. Cierre (2:50–3:00)
-> "Un juez, en segundos, con evidencia, y llegando a todos. Somos Alejo, Selene, Luciano, Rocío y Nahuel."
+> "Un juez, en segundos, con evidencia, y llegando a todos. Somos Alejo, Selene y Rocío."
 
 ---
 
