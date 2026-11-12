@@ -113,13 +113,16 @@ class SincroDB:
             local = m.pedidos.get(p["pedido_id"])
             if local is None:
                 continue
-            m.aplicar_decision(p["pedido_id"], "aprobado", p["juez_id"], p.get("decidido_min"))
+            f = db.firmante(self.pid, p["pedido_id"]) or {}
+            m.aplicar_decision(p["pedido_id"], "aprobado", p["juez_id"], p.get("decidido_min"),
+                               firmado_por=f.get("firmado_por"))
             db.marcar_despachado(self.pid, p["pedido_id"])
         for p in db.listar("pedidos", self.pid, estado="rechazado"):
             if p["pedido_id"] not in self._rechazos_vistos:
                 self._rechazos_vistos.add(p["pedido_id"])
+                f = db.firmante(self.pid, p["pedido_id"]) or {}
                 m.aplicar_decision(p["pedido_id"], "rechazado", p["juez_id"], p.get("decidido_min"),
-                                   p.get("motivo_rechazo"))
+                                   p.get("motivo_rechazo"), firmado_por=f.get("firmado_por"))
         for s in db.solicitudes_pendientes(self.pid):
             datos = s["datos"] or {}
             try:

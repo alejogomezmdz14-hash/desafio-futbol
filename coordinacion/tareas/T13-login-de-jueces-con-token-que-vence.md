@@ -3,8 +3,8 @@ id: T13
 titulo: Login de jueces con token que vence
 carpeta: plataforma/db/, plataforma/api/, ingreso de plataforma/web/
 estado: en-curso
-dueno: selene
-desde: 2026-11-12 12:17
+dueno: alejo
+desde: 2026-11-12 12:18
 creada_por: alejo
 depende_de: T11
 ---

@@ -183,7 +183,7 @@ class Motor:
         return {"hechos": hechos, "errores": errores, "decidido_min": round(self.minuto, 3)}
 
     def aplicar_decision(self, pid: str, nuevo: str, juez_id: str, decidido_min: Optional[float],
-                         motivo: Optional[str] = None) -> None:
+                         motivo: Optional[str] = None, firmado_por: Optional[str] = None) -> None:
         """Registra la decisión del juez en el pedido local. El despacho la toma en la próxima vuelta."""
         with self.lock:
             p = self.pedidos.get(pid)
@@ -193,7 +193,8 @@ class Motor:
                      decidido_min=decidido_min if decidido_min is not None else round(self.minuto, 3),
                      motivo_rechazo=motivo if nuevo == "rechazado" else None)
         self.auditar(f"juez:{juez_id}", "pedido_aprobado" if nuevo == "aprobado" else "pedido_rechazado",
-                     {"pedido_id": pid, **({"motivo": motivo} if motivo else {})})
+                     {"pedido_id": pid, **({"motivo": motivo} if motivo else {}),
+                      **({"firmado_por": firmado_por} if firmado_por else {})})
 
     # --- reclamos (T06): verificar, levantar con firma y reemplazar por algo más preciso ----------
 

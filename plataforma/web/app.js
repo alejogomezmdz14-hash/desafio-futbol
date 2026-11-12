@@ -10,12 +10,31 @@ const ESTADOS_ORDEN = {
 };
 
 const $ = (id) => document.getElementById(id);
-const estado = { pin: leerPin(), juez: null, minuto: 0, pendientes: [], vistos: new Set(), primeraCarga: true };
+const estado = { pin: leerPin(), token: leerToken(), juez: null, minuto: 0, pendientes: [], vistos: new Set(), primeraCarga: true };
 let audio = null;
 
 // ---------------------------------------------------------------------- utilidades
 
 function leerPin() { try { return localStorage.getItem(CLAVE_PIN); } catch { return null; } }
+// T13: acceso por link (?t=...). El link vence solo y la coordinación puede cortarlo.
+const CLAVE_TOKEN = "juez-acceso";
+function leerToken() { try { return localStorage.getItem(CLAVE_TOKEN); } catch { return null; } }
+function guardarToken(t) { try { t ? localStorage.setItem(CLAVE_TOKEN, t) : localStorage.removeItem(CLAVE_TOKEN); } catch { /* sin storage */ } }
+(function tomarTokenDelLink() {
+  const t = new URLSearchParams(location.search).get("t");
+  if (t) { guardarToken(t); history.replaceState(null, "", location.pathname); }   // el token no queda a la vista
+})();
+function mostrarAcceso(datos) {
+  let el = document.getElementById("acceso");
+  if (!el) {
+    el = document.createElement("p"); el.id = "acceso"; el.className = "turno";
+    document.querySelector(".marcador__texto").appendChild(el);
+  }
+  if (!datos) { el.textContent = ""; return; }
+  const vence = datos.vence_epoch ? new Date(datos.vence_epoch * 1000).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }) : null;
+  el.textContent = `Firma: ${datos.nombre}${vence ? ` · acceso hasta las ${vence}` : ""}`;
+}
+
 function guardarPin(pin) { try { pin ? localStorage.setItem(CLAVE_PIN, pin) : localStorage.removeItem(CLAVE_PIN); } catch { /* sin storage */ } }
 
 function nombreJuez(id) {
@@ -33,12 +52,21 @@ function listaHumana(items) {
 
 async function api(ruta, cuerpo) {
   const opciones = { headers: { "Content-Type": "application/json" } };
-  if (estado.pin) opciones.headers["X-Juez-Pin"] = estado.pin;
+  if (estado.token) opciones.headers["Authorization"] = `Bearer ${estado.token}`;
+  else if (estado.pin) opciones.headers["X-Juez-Pin"] = estado.pin;
   if (cuerpo !== undefined) { opciones.method = "POST"; opciones.body = JSON.stringify(cuerpo); }
   const r = await fetch(ruta, opciones);
   let datos = null;
   try { datos = await r.json(); } catch { /* sin cuerpo */ }
-  if (r.status === 401) { pedirPin("El PIN no es correcto. Volvé a ingresarlo."); throw new Error("401"); }
+  if (r.status === 401) {
+    if (estado.token) {   // el link venció o lo cortaron: se borra y se explica por qué
+      estado.token = null; guardarToken(null); mostrarAcceso(null);
+      pedirPin((datos && datos.error) || "Tu acceso ya no es válido. Pedile un link nuevo a la coordinación.");
+    } else {
+      pedirPin("El PIN no es correcto. Volvé a ingresarlo.");
+    }
+    throw new Error("401");
+  }
   if (!r.ok) throw new Error((datos && datos.error) || `La plataforma respondió ${r.status}`);
   return datos;
 }
@@ -303,7 +331,7 @@ async function asumirTurno() {
 
 let refrescando = false;
 async function refrescar() {
-  if (refrescando || !estado.pin) return;
+  if (refrescando || !(estado.pin || estado.token)) return;
   refrescando = true;
   try {
     const [e, p, o] = await Promise.all([api("/api/estado"), api("/api/pedidos?estado=pendiente"), api("/api/ordenes")]);
@@ -335,8 +363,9 @@ $("form-pin").addEventListener("submit", async (ev) => {
   estado.pin = $("pin").value.trim().replace(/^["']+|["']+$/g, "");   // por si se pega con las comillas de .env
   prepararAvisos();
   try {
-    await api("/api/pin/verificar", {});   // si el PIN está mal, api() vuelve a pedirlo con el error
+    const quien = await api("/api/pin/verificar", {});   // si el PIN está mal, api() vuelve a pedirlo con el error
     guardarPin(estado.pin);
+    mostrarAcceso(quien);
     entrar();
   } catch (err) {
     if (err.message !== "401") $("pin-error").textContent = "No se pudo validar el PIN: " + err.message;
@@ -345,5 +374,7 @@ $("form-pin").addEventListener("submit", async (ev) => {
 $("firmar-todos").addEventListener("click", () => firmar(estado.pendientes.map((p) => p.pedido_id)));
 document.addEventListener("click", prepararAvisos, { once: true });
 
-if (estado.pin) api("/api/pin/verificar", {}).then(entrar).catch(() => {}); else pedirPin();
+if (estado.token) api("/api/accesos/yo").then((q) => { mostrarAcceso(q); entrar(); }).catch(() => {});
+else if (estado.pin) api("/api/pin/verificar", {}).then((q) => { mostrarAcceso(q); entrar(); }).catch(() => {});
+else pedirPin();
 setInterval(refrescar, REFRESCO_MS);

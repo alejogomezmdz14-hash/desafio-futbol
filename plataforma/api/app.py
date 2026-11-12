@@ -40,6 +40,10 @@ app = FastAPI(title="Plataforma Federal de Órdenes de Bloqueo en Vivo")
 from plataforma.nube.rutas import router as _router_demo  # noqa: E402
 app.include_router(_router_demo)
 
+# T13: accesos de jueces por link que vence. Las rutas que firman aceptan el link o el PIN.
+from plataforma.api.accesos import firmante, router as _router_accesos  # noqa: E402
+app.include_router(_router_accesos)
+
 
 @app.on_event("startup")
 def _startup() -> None:
@@ -163,7 +167,8 @@ def api_expediente(expediente_id: str, partido_id: Optional[str] = None):
     return exp
 
 
-def _procesar_decision_pedidos(cuerpo: Dict[str, Any], nuevo_estado: str, partido_id: Optional[str] = None) -> Dict[str, Any]:
+def _procesar_decision_pedidos(cuerpo: Dict[str, Any], nuevo_estado: str, partido_id: Optional[str] = None,
+                               quien: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
     pid = _partido_o_defecto(partido_id)
     pedido_ids = cuerpo.get("pedido_ids")
     juez_id = cuerpo.get("juez_id")
@@ -209,6 +214,8 @@ def _procesar_decision_pedidos(cuerpo: Dict[str, Any], nuevo_estado: str, partid
         )
         if ok:
             decididos.append(req_pid)
+            if isinstance(quien, dict):   # llamado directo (pruebas) no trae firmante
+                db.registrar_firma(pid, req_pid, quien["nombre"], quien["via"])
         else:
             errores.append({"pedido_id": req_pid, "error": "El pedido ya fue decidido"})
 
@@ -216,20 +223,20 @@ def _procesar_decision_pedidos(cuerpo: Dict[str, Any], nuevo_estado: str, partid
     return {clave_lista: decididos, "errores": errores, "decidido_min": minuto_actual}
 
 
-@app.post("/api/pin/verificar", dependencies=[Depends(pin_juez)])
-def verificar_pin():
-    """La pantalla del juez valida el PIN al entrar, no recién al firmar."""
-    return {"ok": True}
+@app.post("/api/pin/verificar")
+def verificar_pin(quien: Dict[str, str] = Depends(firmante)):
+    """La pantalla del juez valida el PIN (o el link) al entrar, no recién al firmar."""
+    return {"ok": True, "nombre": quien["nombre"], "via": quien["via"]}
 
 
-@app.post("/api/pedidos/aprobar", dependencies=[Depends(pin_juez)])
-def api_aprobar(cuerpo: Dict[str, Any], partido_id: Optional[str] = None):
-    return _procesar_decision_pedidos(cuerpo, "aprobado", partido_id)
+@app.post("/api/pedidos/aprobar")
+def api_aprobar(cuerpo: Dict[str, Any], partido_id: Optional[str] = None, quien: Dict[str, str] = Depends(firmante)):
+    return _procesar_decision_pedidos(cuerpo, "aprobado", partido_id, quien)
 
 
-@app.post("/api/pedidos/rechazar", dependencies=[Depends(pin_juez)])
-def api_rechazar(cuerpo: Dict[str, Any], partido_id: Optional[str] = None):
-    return _procesar_decision_pedidos(cuerpo, "rechazado", partido_id)
+@app.post("/api/pedidos/rechazar")
+def api_rechazar(cuerpo: Dict[str, Any], partido_id: Optional[str] = None, quien: Dict[str, str] = Depends(firmante)):
+    return _procesar_decision_pedidos(cuerpo, "rechazado", partido_id, quien)
 
 
 @app.get("/api/ordenes")
@@ -250,7 +257,7 @@ def api_reclamos(partido_id: Optional[str] = None):
     return {"reclamos": db.listar("reclamos", pid)}
 
 
-@app.post("/api/turno/asumir", dependencies=[Depends(pin_juez)])
+@app.post("/api/turno/asumir", dependencies=[Depends(firmante)])
 def api_asumir_turno(cuerpo: Dict[str, Any], partido_id: Optional[str] = None):
     pid = _partido_o_defecto(partido_id)
     juez_id = cuerpo.get("juez_id")
@@ -271,7 +278,7 @@ def api_asumir_turno(cuerpo: Dict[str, Any], partido_id: Optional[str] = None):
     return {"juez_id": juez_id, "ratificadas": vigentes, "decidido_min": minuto_actual}
 
 
-@app.post("/api/reclamos/levantar", dependencies=[Depends(pin_juez)])
+@app.post("/api/reclamos/levantar", dependencies=[Depends(firmante)])
 def api_levantar_reclamo(cuerpo: Dict[str, Any], partido_id: Optional[str] = None):
     pid = _partido_o_defecto(partido_id)
     reclamo_id = cuerpo.get("reclamo_id")

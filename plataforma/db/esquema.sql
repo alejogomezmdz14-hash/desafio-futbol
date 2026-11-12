@@ -62,3 +62,15 @@ CREATE TABLE IF NOT EXISTS auditoria (
 CREATE TABLE IF NOT EXISTS verificaciones (
   partido_id TEXT PRIMARY KEY, salida TEXT NOT NULL, creada_ts TEXT NOT NULL
 );
+
+-- Quién firmó cada decisión (T13): el nombre del link del juez, o "Coordinación (PIN)".
+CREATE TABLE IF NOT EXISTS firmas (
+  partido_id TEXT NOT NULL, pedido_id TEXT NOT NULL,
+  firmado_por TEXT NOT NULL, via TEXT NOT NULL, creada_ts TEXT NOT NULL,
+  PRIMARY KEY (partido_id, pedido_id)
+);
+
+-- Ajustes de la plataforma (T13): por ejemplo, la generación de accesos que permite cortarlos todos.
+CREATE TABLE IF NOT EXISTS ajustes (
+  clave TEXT PRIMARY KEY, valor TEXT NOT NULL
+);

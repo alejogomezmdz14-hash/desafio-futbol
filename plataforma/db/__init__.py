@@ -428,3 +428,37 @@ def crear_solicitud(partido_id: str, tipo: str, datos: Dict[str, Any]) -> str:
         sql = "INSERT INTO solicitudes (partido_id, solicitud_id, tipo, datos, creada_ts, resultado) VALUES (?, ?, ?, ?, ?, NULL)"
         cur.execute(_q(sql, pg), [partido_id, solicitud_id, tipo, _json_param(datos, pg), ts])
     return solicitud_id
+
+
+# =====================================================================================
+# Firmas y ajustes (T13: accesos de jueces por link que vence)
+# =====================================================================================
+
+
+def registrar_firma(partido_id: str, pedido_id: str, firmado_por: str, via: str) -> None:
+    """Guarda quién firmó la decisión de un pedido. La primera firma es la que vale."""
+    with _sesion() as (_, cur, pg):
+        cur.execute(_q("INSERT INTO firmas (partido_id, pedido_id, firmado_por, via, creada_ts) VALUES (?, ?, ?, ?, ?) "
+                       "ON CONFLICT (partido_id, pedido_id) DO NOTHING", pg),
+                    (partido_id, pedido_id, firmado_por, via, ahora_ts()))
+
+
+def firmante(partido_id: str, pedido_id: str) -> Optional[Dict[str, str]]:
+    with _sesion() as (_, cur, pg):
+        cur.execute(_q("SELECT firmado_por, via FROM firmas WHERE partido_id = ? AND pedido_id = ?", pg),
+                    (partido_id, pedido_id))
+        fila = cur.fetchone()
+    return {"firmado_por": fila[0], "via": fila[1]} if fila else None
+
+
+def leer_ajuste(clave: str, defecto: str) -> str:
+    with _sesion() as (_, cur, pg):
+        cur.execute(_q("SELECT valor FROM ajustes WHERE clave = ?", pg), (clave,))
+        fila = cur.fetchone()
+    return fila[0] if fila else defecto
+
+
+def escribir_ajuste(clave: str, valor: str) -> None:
+    with _sesion() as (_, cur, pg):
+        cur.execute(_q("INSERT INTO ajustes (clave, valor) VALUES (?, ?) "
+                       "ON CONFLICT (clave) DO UPDATE SET valor = EXCLUDED.valor", pg), (clave, valor))
