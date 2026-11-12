@@ -2,9 +2,9 @@
 id: T11
 titulo: Base de datos y deploy de la web en Vercel
 carpeta: plataforma/db/, plataforma/api/, vercel.json
-estado: en-curso
+estado: hecha
 dueno: selene
-desde: 2026-11-11 14:29
+desde: 2026-11-11 23:28
 creada_por: alejo
 depende_de: T00
 ---
