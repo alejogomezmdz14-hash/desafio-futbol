@@ -8,7 +8,7 @@ from pathlib import Path
 _tmp = Path(tempfile.mkdtemp()) / "accesos.db"
 os.environ["DATABASE_URL"] = f"sqlite:///{_tmp.as_posix()}"
 os.environ["JUEZ_PIN"] = "pin-de-prueba-123"
-os.environ.pop("SESION_SECRET", None)
+os.environ["SESION_SECRET"] = "clave-de-prueba-larga-0123456789abcdef"
 
 from fastapi.testclient import TestClient  # noqa: E402
 
@@ -80,6 +80,14 @@ with TestClient(app) as c:
     r = c.post(f"/api/pedidos/aprobar?partido_id={pid}", json={"pedido_ids": ["P-903"], "juez_id": juez}, headers=PIN)
     prueba("el PIN sigue firmando como respaldo", r.status_code == 200 and
            (db.firmante(pid, "P-903") or {}).get("firmado_por") == "Coordinación (PIN)")
+
+    secreto = os.environ.pop("SESION_SECRET")
+    r = c.post("/api/accesos", json={"nombre": "Sin clave", "horas": 1}, headers=PIN)
+    prueba("sin un secreto largo (solo PIN y SQLite) no se crean links: falla cerrado", r.status_code == 503)
+    os.environ["SESION_SECRET"] = "corta"
+    r = c.post("/api/accesos", json={"nombre": "Clave corta", "horas": 1}, headers=PIN)
+    prueba("una SESION_SECRET corta no se acepta", r.status_code == 503)
+    os.environ["SESION_SECRET"] = secreto
 
 ok = sum(resultados)
 print(f"\ntest_accesos: {ok} de {len(resultados)} pruebas OK")

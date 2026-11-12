@@ -4,9 +4,8 @@ Quien coordina (con el PIN) crea un link por juez y por N horas. El juez lo abre
 nombre. "Cortar todos los accesos" invalida de golpe todos los links emitidos. Sin usuarios ni contraseñas.
 
 El link lleva un token: base64url(datos) + "." + HMAC-SHA256(clave, base64url(datos)). Los datos son el nombre, el
-vencimiento y la "generación" de accesos; si alguien los toca, la firma no coincide. La clave es SESION_SECRET si está
-cargada en Vercel; si no, se deriva del JUEZ_PIN (cambiar el PIN también corta todos los links). Sin ninguna de las
-dos, todo falla cerrado.
+vencimiento y la "generación" de accesos; si alguien los toca, la firma no coincide. La clave sale de un secreto largo
+que solo tiene el servidor (ver _clave): nunca solo del PIN.
 """
 import base64
 import hashlib
@@ -30,12 +29,20 @@ router = APIRouter()
 
 
 def _clave() -> bytes:
+    """Clave de firma de los links. Nunca sale solo del PIN: quien tiene un link podría probar PINs offline.
+
+    1. SESION_SECRET (al menos 32 caracteres al azar), cargada en Vercel: la opción preferida.
+    2. Si no está: se deriva de DATABASE_URL (lleva la contraseña larga y aleatoria de Neon, que solo tiene el
+       servidor) junto con el PIN, así cambiar el PIN sigue cortando todos los links.
+    3. Sin ninguna de las dos: falla cerrado.
+    """
     secreto = os.environ.get("SESION_SECRET", "")
-    if secreto:
+    if len(secreto) >= 32:
         return secreto.encode()
-    pin = os.environ.get("JUEZ_PIN", "")
-    if pin:
-        return hmac.new(pin.encode(), b"accesos-jueces-v1", hashlib.sha256).digest()
+    base, pin = os.environ.get("DATABASE_URL", ""), os.environ.get("JUEZ_PIN", "")
+    if base.startswith(("postgres://", "postgresql://")) and pin:
+        return hmac.new(hashlib.sha256(base.encode()).digest(), b"accesos-jueces-v2|" + pin.encode(),
+                        hashlib.sha256).digest()
     raise HTTPException(status_code=503, detail={"error": "La plataforma no tiene clave para firmar accesos"})
 
 
