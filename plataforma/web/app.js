@@ -184,7 +184,9 @@ function renderEstado(e) {
     } else quitarAviso("desconectado");
   }
 
-  if (estado.juez && e.turno_ratificado === false && !e.finalizado) {
+  // Tras tocar "Asumir turno" el motor tarda 1-2 s en ratificar: no se vuelve a mostrar el aviso mientras tanto.
+  const recienAsumido = estado.asumido && estado.asumido.juez === estado.juez && Date.now() - estado.asumido.t < 20000;
+  if (estado.juez && e.turno_ratificado === false && !e.finalizado && !recienAsumido) {
     if (!document.querySelector('[data-aviso="traspaso"]')) {
       aviso(`${nombreJuez(estado.juez)}: las órdenes que firmó el turno anterior siguen vigentes. Asumí el turno para ratificarlas; hasta entonces sus reintentos quedan en espera.`,
         "info", { id: "traspaso", titulo: "Cambió el turno", boton: { texto: "Asumir turno y ratificar órdenes", accion: asumirTurno } });
@@ -352,6 +354,7 @@ async function arrancarPractica() {
 async function asumirTurno() {
   try {
     const r = await api("/api/turno/asumir", { juez_id: estado.juez });
+    estado.asumido = { juez: estado.juez, t: Date.now() };
     quitarAviso("traspaso");
     aviso(`Ratificaste ${r.ratificadas.length} órdenes vigentes. Desde ahora los reintentos salen con tu firma.`, "ok",
       { duracion: 5000, titulo: `Turno asumido por ${nombreJuez(r.juez_id)}` });
