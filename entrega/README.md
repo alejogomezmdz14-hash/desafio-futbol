@@ -8,6 +8,9 @@ Mientras se juega el partido, la plataforma detecta un stream pirata y arma el e
 
 > Todo es ficticio: proveedores, juzgados, dominios `.test` e IPs de documentación. Solo trabajamos contra el simulador de la organización. No se bloquea nada real.
 
+## No es solo un problema de derechos de televisión
+Las páginas de fútbol gratis también se usan para **robar los datos de quienes las miran**. En septiembre de 2026, tras una denuncia de ALIANZA, la Justicia bloqueó unos 300 sitios que robaban datos bancarios e instalaban software malicioso ([DPL News](https://dplnews.com/?p=329227), [Señal News](https://senalnews.com/es/data/tras-denuncia-de-alianza-la-justicia-argentina-bloquea-300-dominios-clandestinos)). Un análisis de OpenText sobre 50 sitios ilegales de streaming deportivo encontró contenido malicioso en todos ([Piracy Monitor](https://piracymonitor.org/webroot-illegal-streaming-sites-expose-fans-to-fraud-scams-and-explicit-content/)). Cortar un stream pirata a tiempo también protege a la gente que entra a verlo.
+
 ## Por qué un juez, y por qué en Argentina
 El art. 57 inc. a) de la **Ley 27.078 (Argentina Digital)** prohíbe a los proveedores bloquear contenidos "salvo orden judicial". Por eso el modelo italiano, donde el regulador bloquea sin juez, acá no tiene base legal. Además, la Corte Suprema ("Rodríguez c/ Google") exige examinar cada contenido concreto antes de bloquearlo. La plataforma resuelve eso: **cada objetivo nuevo pasa por el juez de turno**, en segundos, con la evidencia a la vista. La propuesta normativa está en [`propuesta-normativa.md`](propuesta-normativa.md). Los escenarios, la comparación con Italia y el modelo de negocio están en [`escenarios-y-modelo.md`](escenarios-y-modelo.md).
 

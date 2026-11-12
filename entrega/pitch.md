@@ -34,7 +34,7 @@ Va con las **7 diapositivas** del deck [El VAR de la piratería](https://claude.
 
 ### Diapositiva 1 · Gancho (0:00–0:20)
 **En pantalla:** "Todos nosotros, alguna vez, vimos un partido en una página trucha." Al pie: 14,3 M de usuarios piratas por mes y ~300 páginas truchas bloqueadas.
-> "Todos nosotros, alguna vez, vimos un partido en una página trucha. No venimos a señalar a nadie. Pero esa página 'gratis' nos sale cara: la plata de ese partido no le llega a nuestro club, y muchas de esas páginas, encima, se quedan con los datos de nuestra tarjeta.
+> "Todos nosotros, alguna vez, vimos un partido en una página trucha. No venimos a señalar a nadie. Pero esa página 'gratis' nos sale cara: la plata de ese partido no le llega a nuestro club, y muchas de esas páginas, encima, se quedan con los datos de nuestra tarjeta. En septiembre la Justicia bloqueó 300 páginas de fútbol gratis que hacían exactamente eso: robaban datos bancarios.
 > El problema no es el que mira. Es la página. Y hoy, cuando la Justicia intenta cortarla, llega tarde."
 
 *(Fuentes: ASIET 2023 para los 14,3 M; Alianza 2026 para las ~300 páginas que robaban datos bancarios — `reports/` §1.)*
@@ -76,6 +76,8 @@ Va con las **7 diapositivas** del deck [El VAR de la piratería](https://claude.
 > Hoy la piratería juega sin árbitro. Nosotros le pusimos uno: rápido, justo, y que llega a todos. Somos Alejo, Selene y Rocío."
 
 ### Lo que quedó afuera del pitch (va en el video de demo o en las preguntas)
+
+- **Si preguntan por el robo de datos:** en septiembre de 2026, tras una denuncia de ALIANZA, la Justicia bloqueó unos 300 sitios de fútbol gratis que robaban datos bancarios e instalaban software malicioso ([DPL News](https://dplnews.com/?p=329227)). Un análisis de OpenText sobre 50 sitios ilegales de streaming deportivo encontró contenido malicioso en todos, sobre todo troyanos bancarios ([Piracy Monitor](https://piracymonitor.org/webroot-illegal-streaming-sites-expose-fans-to-fraud-scams-and-explicit-content/)). **No hay** un estudio serio que diga qué porcentaje de usuarios termina con sus datos robados: no decir un número así. Lo que se puede afirmar es que los sitios son la trampa.
 - El canal con derechos que la plataforma no bloquea (Canal Norte).
 - El cambio de turno del minuto 50.
 - La prueba que no se puede trucar (alterar el registro y que salte la alarma).
