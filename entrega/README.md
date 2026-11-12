@@ -142,6 +142,7 @@ Dos corridas del partido de práctica. Cada una tiene su evidencia (expediente c
 ## Entregables (`entrega/`)
 - `README.md`: este archivo.
 - [`escenarios-y-modelo.md`](escenarios-y-modelo.md): cada escenario (del partido y del mundo real), cómo lo resuelve la plataforma, quién paga y el camino a producción.
+- [`video-pitch.mp4`](video-pitch.mp4): **video del pitch** (2:58), con subtítulos. Los subtítulos sueltos están en [`video-pitch.srt`](video-pitch.srt).
 - [`pitch.md`](pitch.md): guion del pitch y del video de 3 minutos.
 - `propuesta-normativa.md`: 1 página (T08).
 - `expediente-final.json` y `auditoria-final.jsonl`: exportados del partido final (T03).

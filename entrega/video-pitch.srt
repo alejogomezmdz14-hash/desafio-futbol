@@ -1,0 +1,215 @@
+1
+00:00:00,418 --> 00:00:03,720
+Todos alguna vez vimos un partido de fútbol
+
+2
+00:00:03,740 --> 00:00:06,985
+de manera ilegal, y no venimos a señalar
+
+3
+00:00:07,005 --> 00:00:11,745
+a nadie con el dedo. El problema no está en ver ese partido:
+
+4
+00:00:11,765 --> 00:00:14,796
+lo que está mal es ese sitio,
+
+5
+00:00:14,816 --> 00:00:18,390
+porque, sin darnos cuenta, esos sitios nos roban
+
+6
+00:00:18,410 --> 00:00:20,603
+datos. Ahora, ¿cuál es el problema?
+
+7
+00:00:20,975 --> 00:00:22,917
+¿Por qué llega tarde? Porque la orden
+
+8
+00:00:22,937 --> 00:00:25,929
+pasa de mano en mano: Fiscalía,
+
+9
+00:00:25,949 --> 00:00:29,096
+Juzgado, ENACOM, las cámaras y recién después
+
+10
+00:00:29,116 --> 00:00:31,542
+más de mil empresas de internet.
+
+11
+00:00:31,642 --> 00:00:33,973
+Eso genera tres problemas muy concretos.
+
+12
+00:00:33,993 --> 00:00:36,538
+Uno: llega tarde. El partido dura dos horas
+
+13
+00:00:36,558 --> 00:00:40,288
+y la página trucha se muda en minutos.
+
+14
+00:00:40,308 --> 00:00:44,096
+Dos: llega a medias. Las grandes bloquean; la cooperativa
+
+15
+00:00:44,116 --> 00:00:47,205
+de un pueblo de la Puna ni se entera.
+
+16
+00:00:47,225 --> 00:00:50,605
+Y tres: rompe cosas. Se cae también
+
+17
+00:00:50,625 --> 00:00:53,112
+la página de la panadería del barrio que vivía
+
+18
+00:00:53,132 --> 00:00:56,821
+en el mismo servidor, y nadie sabe qué se bloqueó ni hasta cuándo.
+
+19
+00:00:56,872 --> 00:01:00,484
+Por eso hicimos el VAR de la piratería.
+
+20
+00:01:00,525 --> 00:01:04,430
+La jugada llega grabada, el juez la analiza en ese mismo momento
+
+21
+00:01:04,450 --> 00:01:08,761
+y la orden llega a todas las canchas al mismo tiempo.
+
+22
+00:01:09,288 --> 00:01:13,319
+Nuestro sistema detecta la página y arma automáticamente
+
+23
+00:01:13,339 --> 00:01:16,992
+la solicitud para el juez. Al juez de turno le llega
+
+24
+00:01:17,012 --> 00:01:20,470
+una notificación al celular, la firma, y se apaga
+
+25
+00:01:20,490 --> 00:01:24,084
+en todos los servidores a la vez. Y ese bloqueo termina solo
+
+26
+00:01:24,104 --> 00:01:25,966
+con el pitazo final del partido.
+
+27
+00:01:26,328 --> 00:01:28,815
+Pongámoslo en vivo. Así lo ve el juez.
+
+28
+00:01:28,835 --> 00:01:31,360
+Mientras corre el partido, en el minuto 3 le vibra el celular:
+
+29
+00:01:31,380 --> 00:01:34,275
+apareció una página trucha. La aplicación ya armó la
+
+30
+00:01:34,295 --> 00:01:37,830
+prueba de que es nuestro partido: la firma invisible
+
+31
+00:01:37,850 --> 00:01:40,648
+que va dentro de la imagen, qué se bloquea en cada
+
+32
+00:01:40,668 --> 00:01:44,242
+empresa y hasta cuándo. Van llegando más, y el juez
+
+33
+00:01:44,262 --> 00:01:47,779
+firma los tres con un toque. Y miren: cada empresa contesta
+
+34
+00:01:47,799 --> 00:01:51,276
+en verde: ya bloqueó. Una falló y la plataforma reintentó
+
+35
+00:01:51,296 --> 00:01:55,075
+sola. Y lo importante: llega a todas las transmisiones
+
+36
+00:01:55,095 --> 00:01:58,436
+sin romper nada. Lo tenemos que ver de la siguiente
+
+37
+00:01:58,456 --> 00:02:02,147
+manera: una CDN es un edificio con varios
+
+38
+00:02:02,167 --> 00:02:04,440
+departamentos. Necesitamos cortar la luz,
+
+39
+00:02:04,460 --> 00:02:07,160
+pero no a todos los departamentos
+
+40
+00:02:07,180 --> 00:02:09,958
+por igual. Con el sistema identificamos cuál es
+
+41
+00:02:09,978 --> 00:02:13,106
+el departamento que tiene el comportamiento
+
+42
+00:02:13,126 --> 00:02:17,021
+ilegal, y le cortamos la luz solo a él. Ahora veamos
+
+43
+00:02:17,041 --> 00:02:19,741
+el resultado. Lo probamos en el simulador
+
+44
+00:02:19,761 --> 00:02:23,295
+oficial del desafío. Con la solución básica que traía,
+
+45
+00:02:23,453 --> 00:02:26,929
+el 92 % de la gente veía el partido igual.
+
+46
+00:02:27,009 --> 00:02:30,661
+Con la nuestra, el 3 %. Las siete páginas truchas, bloqueadas
+
+47
+00:02:30,681 --> 00:02:34,722
+en menos de un minuto cada una, y cero páginas inocentes
+
+48
+00:02:34,742 --> 00:02:38,472
+rotas. Y todo queda en un registro público: qué se bloqueó,
+
+49
+00:02:38,492 --> 00:02:42,106
+por orden de qué juez y hasta cuándo. Y lo paga
+
+50
+00:02:42,126 --> 00:02:45,096
+el que pierde la plata: los dueños de los derechos del fútbol.
+
+51
+00:02:45,273 --> 00:02:48,321
+Para el juez y para las empresas es gratis.
+
+52
+00:02:48,363 --> 00:02:51,549
+Para arrancar, alcanza con un partido de prueba
+
+53
+00:02:51,569 --> 00:02:54,638
+de la Liga. Hoy la piratería juega sin árbitro.
+
+54
+00:02:54,658 --> 00:02:56,987
+Nosotros le pusimos uno. Muchas gracias.
