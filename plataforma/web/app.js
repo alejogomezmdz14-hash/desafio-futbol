@@ -2,7 +2,7 @@
 "use strict";
 
 const REFRESCO_MS = 2000;
-const CLAVE_PIN = "juez-pin";
+const CLAVE_SESION = "sesion-coordinacion";   // la comparte demo.html
 const PROVEEDORES = { aurora: "Aurora", andina: "Andina", valle: "FibraValle", cumbre: "Cumbre" };
 const ESTADOS_ORDEN = {
   enviando: "Enviando", recibida: "Recibida, aplicando", aplicada: "Bloqueado", fallida: "Falló, se reintenta",
@@ -10,24 +10,14 @@ const ESTADOS_ORDEN = {
 };
 
 const $ = (id) => document.getElementById(id);
-const estado = { pin: leerPin(), token: leerToken(), juez: null, minuto: 0, pendientes: [], vistos: new Set(), primeraCarga: true };
+const estado = { token: leerToken(), juez: null, minuto: 0, pendientes: [], vistos: new Set(), primeraCarga: true };
 let audio = null;
 
 // ---------------------------------------------------------------------- utilidades
 
-function leerPin() { try { return localStorage.getItem(CLAVE_PIN); } catch { return null; } }
-// T13: acceso por link (?t=...). El link vence solo y la coordinación puede cortarlo.
-const CLAVE_TOKEN = "juez-acceso";
-function leerToken() { try { return localStorage.getItem(CLAVE_TOKEN); } catch { return null; } }
-function guardarToken(t) { try { t ? localStorage.setItem(CLAVE_TOKEN, t) : localStorage.removeItem(CLAVE_TOKEN); } catch { /* sin storage */ } }
-(function tomarTokenDelLink() {
-  const t = new URLSearchParams(location.search).get("t");
-  if (t) {
-    guardarToken(t);
-    if (typeof estado !== "undefined") { estado.token = t; estado.pin = null; }   // estado ya se armó antes de leer el link
-    history.replaceState(null, "", location.pathname);   // el token no queda a la vista
-  }
-})();
+// Login simple de la coordinación (decisión 43): la sesión es un token que vence a las 12 horas.
+function leerToken() { try { return localStorage.getItem(CLAVE_SESION); } catch { return null; } }
+function guardarToken(t) { try { t ? localStorage.setItem(CLAVE_SESION, t) : localStorage.removeItem(CLAVE_SESION); } catch { /* sin storage */ } }
 function mostrarAcceso(datos) {
   let el = document.getElementById("acceso");
   if (!el) {
@@ -44,14 +34,11 @@ function mostrarAcceso(datos) {
   btnSalir.textContent = "Cerrar sesión";
   btnSalir.addEventListener("click", () => {
     estado.token = null; guardarToken(null);
-    estado.pin = null; guardarPin(null);
     mostrarAcceso(null);
-    pedirPin("");
+    pedirLogin("");
   });
   el.append(span, btnSalir);
 }
-
-function guardarPin(pin) { try { pin ? localStorage.setItem(CLAVE_PIN, pin) : localStorage.removeItem(CLAVE_PIN); } catch { /* sin storage */ } }
 
 function nombreJuez(id) {
   if (!id) return "nadie";
@@ -69,18 +56,13 @@ function listaHumana(items) {
 async function api(ruta, cuerpo) {
   const opciones = { headers: { "Content-Type": "application/json" } };
   if (estado.token) opciones.headers["Authorization"] = `Bearer ${estado.token}`;
-  else if (estado.pin) opciones.headers["X-Juez-Pin"] = estado.pin;
   if (cuerpo !== undefined) { opciones.method = "POST"; opciones.body = JSON.stringify(cuerpo); }
   const r = await fetch(ruta, opciones);
   let datos = null;
   try { datos = await r.json(); } catch { /* sin cuerpo */ }
-  if (r.status === 401) {
-    if (estado.token) {   // el link venció o lo cortaron: se borra y se explica por qué
-      estado.token = null; guardarToken(null); mostrarAcceso(null);
-      pedirPin((datos && datos.error) || "Tu acceso ya no es válido. Pedile un link nuevo a la coordinación.");
-    } else {
-      pedirPin("El PIN no es correcto. Volvé a ingresarlo.");
-    }
+  if (r.status === 401) {   // la sesión venció o no es válida: se vuelve al ingreso y se dice por qué
+    estado.token = null; guardarToken(null); mostrarAcceso(null);
+    pedirLogin((datos && datos.error) || "Volvé a ingresar con el usuario y la contraseña.");
     throw new Error("401");
   }
   if (!r.ok) throw new Error((datos && datos.error) || `La plataforma respondió ${r.status}`);
@@ -182,11 +164,9 @@ function renderEstado(e) {
     // Sin partido en juego no hay nada para firmar: se dice claro y se ofrece arrancar uno de práctica.
     quitarAviso("desconectado");
     if (!document.querySelector('[data-aviso="sin-partido"]')) {
-      aviso(estado.pin
-        ? "El último partido ya terminó, así que no hay pedidos para firmar. Arrancá uno de práctica para probar: en unos 30 segundos aparecen los pedidos acá."
-        : "El último partido ya terminó, así que no hay pedidos para firmar. Cuando la coordinación arranque el próximo, aparecen acá solos.",
+      aviso("El último partido ya terminó, así que no hay pedidos para firmar. Arrancá uno de práctica para probar: en unos 30 segundos aparecen los pedidos acá.",
         "info", { id: "sin-partido", titulo: "No hay partido en juego",
-                  boton: estado.pin ? { texto: "Arrancar partido de práctica", accion: arrancarPractica } : null });
+                  boton: { texto: "Arrancar partido de práctica", accion: arrancarPractica } });
     }
   } else {
     quitarAviso("sin-partido");
@@ -378,7 +358,7 @@ async function asumirTurno() {
 
 let refrescando = false;
 async function refrescar() {
-  if (refrescando || !(estado.pin || estado.token)) return;
+  if (refrescando || !estado.token) return;
   refrescando = true;
   try {
     const [e, p, o] = await Promise.all([api("/api/estado"), api("/api/pedidos?estado=pendiente"), api("/api/ordenes")]);
@@ -397,8 +377,7 @@ async function refrescar() {
   } finally { refrescando = false; }
 }
 
-function pedirPin(error = "") {
-  estado.pin = null; guardarPin(null);
+function pedirLogin(error = "") {
   estado.token = null; guardarToken(null);
   $("tablero").hidden = true; $("accion").hidden = true; $("ingreso").hidden = false;
   if ($("login-error")) $("login-error").textContent = error;
@@ -420,7 +399,7 @@ if ($("form-login")) {
     if ($("btn-login")) $("btn-login").disabled = true;
     prepararAvisos();
     try {
-      const r = await fetch("/api/auth/login", {
+      const r = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ usuario, password }),
@@ -430,7 +409,6 @@ if ($("form-login")) {
         if ($("login-error")) $("login-error").textContent = datos.error || "Usuario o contraseña incorrectos";
         return;
       }
-      estado.pin = null; guardarPin(null);
       estado.token = datos.token;
       guardarToken(datos.token);
       mostrarAcceso({ nombre: datos.nombre });
@@ -447,8 +425,6 @@ if ($("form-login")) {
 $("firmar-todos").addEventListener("click", () => firmar(estado.pendientes.map((p) => p.pedido_id)));
 document.addEventListener("click", prepararAvisos, { once: true });
 
-estado.token = estado.token || leerToken();   // al armar estado la clave del token todavía no existía
-if (estado.token) api("/api/accesos/yo").then((q) => { mostrarAcceso(q); entrar(); }).catch(() => pedirPin());
-else if (estado.pin) api("/api/pin/verificar", {}).then((q) => { mostrarAcceso(q); entrar(); }).catch(() => pedirPin());
-else pedirPin();
+if (estado.token) api("/api/sesion").then((q) => { mostrarAcceso(q); entrar(); }).catch(() => pedirLogin());
+else pedirLogin();
 setInterval(refrescar, REFRESCO_MS);

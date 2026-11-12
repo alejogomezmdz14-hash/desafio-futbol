@@ -64,7 +64,7 @@ python -m plataforma.evidencia.test_evidencia
 ```bash
 uvicorn plataforma.web.mock_api:app --port 8000
 ```
-Abrir http://localhost:8000/juez/ con el PIN `1234`, idealmente en tamaño celular. El mock corre el partido de práctica a x10 con el cerebro real. Para ver el cambio de turno del minuto 50, arrancalo con `MOCK_INICIO_MIN=46`.
+Abrir http://localhost:8000/juez/ con el usuario `coordinacion` y la contraseña que imprime el mock al arrancar, idealmente en tamaño celular. El mock corre el partido de práctica a x10 con el cerebro real. Para ver el cambio de turno del minuto 50, arrancalo con `MOCK_INICIO_MIN=46`.
 
 **4. El circuito completo contra el simulador** (motor, despacho, API y pantalla del juez en un solo comando):
 ```bash
@@ -72,17 +72,17 @@ python simulador/servidor.py --acelerar 6
 python -m plataforma.main --sim http://localhost:8080 --local
 python evaluacion/verificar.py --log salida/registro.jsonl
 ```
-El segundo comando va en otra terminal. Sin `--juez-automatico`, aprobás desde http://localhost:8000/juez/ con el PIN que imprime el motor al arrancar (o el de la variable `JUEZ_PIN`). Para entrar desde el celular por wifi agregá `--red`. Por defecto el motor solo escucha en la propia máquina. El tercero se corre cuando termina el partido.
+El segundo comando va en otra terminal. Sin `--juez-automatico`, aprobás desde http://localhost:8000/juez/ con el usuario y la contraseña que imprime el motor al arrancar (o los de las variables `COORD_USUARIO` y `COORD_PASSWORD`). Esto reemplaza al PIN (`JUEZ_PIN`). Para entrar desde el celular por wifi agregá `--red`. Por defecto el motor solo escucha en la propia máquina. El tercero se corre cuando termina el partido.
 
 **5. Con la base y la web de Vercel** (modo del partido final). La web de T11 corre en Vercel y lee y decide sobre la base. El motor corre donde llegue al simulador y sincroniza con esa misma base:
 ```bash
 DATABASE_URL=postgres://...  python -m plataforma.main --sim URL_DEL_SIMULADOR --base --sin-web --exportar-entrega
 ```
-Para probarlo todo en local, con SQLite: `DATABASE_URL=sqlite:///salida/plataforma.db JUEZ_PIN=<pin> uvicorn plataforma.api.app:app --port 8020` en una terminal, el motor con `--base --sin-web` en otra, y la pantalla del juez en http://localhost:8020/juez/. Así se hizo la corrida `practica-juez-humano/`.
+Para probarlo todo en local, con SQLite: `DATABASE_URL=sqlite:///salida/plataforma.db COORD_PASSWORD=<contraseña> SESION_SECRET=<32+ caracteres> uvicorn plataforma.api.app:app --port 8020` en una terminal, el motor con `--base --sin-web` en otra, y la pantalla del juez en http://localhost:8020/juez/. Así se hizo la corrida `practica-juez-humano/`.
 
 **En línea:** https://desafio-futbol-iota.vercel.app. La web y la API corren en Vercel sobre una base Postgres en Neon (São Paulo).
 
-**6. Partido de práctica online (T12), sin ninguna notebook.** En https://desafio-futbol-iota.vercel.app/juez/demo.html se pone el PIN y se aprieta "Correr partido de práctica". La web prende un Vercel Sandbox que clona este repo y levanta el simulador de la organización y nuestro motor apuntando a la base. El juez firma desde `/juez/` en el celular y, al terminar, la página muestra la salida de `evaluacion/verificar.py`. Hay un solo partido a la vez, con velocidad de x6 a x30.
+**6. Partido de práctica online (T12), sin ninguna notebook.** En https://desafio-futbol-iota.vercel.app/juez/demo.html se entra con el usuario y la contraseña de la coordinación y se aprieta "Correr partido de práctica". La web prende un Vercel Sandbox que clona este repo y levanta el simulador de la organización y nuestro motor apuntando a la base. El juez firma desde `/juez/` en el celular y, al terminar, la página muestra la salida de `evaluacion/verificar.py`. Hay un solo partido a la vez, con velocidad de x6 a x30.
 
 ## Estado (se actualiza durante el evento)
 | Tarea | Estado |
@@ -108,7 +108,7 @@ Dos corridas del partido de práctica. Cada una tiene su evidencia (expediente c
 |---|---|---|---|
 | Fases piratas bloqueadas | 1 de 7 | 7 de 7 | **7 de 7** |
 | Visibilidad residual promedio | 92,4 % | 3,1 % | **6,3 %** |
-| Primer bloqueo después de la detección | 14,7 min | 0,4–0,9 min | **0,9–1,8 min** (5,3 en el primero, que esperó el ingreso del PIN) |
+| Primer bloqueo después de la detección | 14,7 min | 0,4–0,9 min | **0,9–1,8 min** (5,3 en el primero, que esperó el ingreso) |
 | Clientes cubiertos por fase | — | 100 % | **100 %** |
 | Sitios legítimos afectados / falsos positivos | 0 / 0 | 0 / 0 | **0 / 0** |
 | Órdenes rechazadas / firmadas fuera de turno | 1 / 0 | 0 / 0 | **0 / 0** |
@@ -123,7 +123,7 @@ Dos corridas del partido de práctica. Cada una tiene su evidencia (expediente c
   - el art. 288 del Código Civil y Comercial exige **firma digital** en documentos electrónicos.
 
   En producción, la plataforma arma cada orden como documento PDF con su expediente y sus hashes. **El juez la firma con su propio certificado** de firma digital (Ley 25.506), desde el celular, con la [Plataforma de Firma Digital Remota](https://www.argentina.gob.ar/jefatura/innovacion-ciencia-y-tecnologia/innovacion/firma-digital/pfdr), que funciona sin token y con un código de un solo uso. **La plataforma nunca tiene la clave del juez.** Cada proveedor verifica la firma con el certificado público antes de bloquear. "Firmar en lote" son varias firmas, una por orden y cada una con su fundamento; no una sola firma que cubra todo.
-- **El acceso del juez es un PIN de demo.** En producción, la identidad la da la propia firma digital.
+- **Acceso: un solo login de la coordinación** (usuario y contraseña, decisión 43). Quien entra firma como el juez de turno del minuto. Las sesiones vencen a las 12 horas y 5 intentos fallidos bloquean 5 minutos. En producción, la identidad de cada juez la da su propia firma digital.
 - **"Sitio" son las dos últimas etiquetas del dominio** (`s1.pelotaya.test` → `pelotaya.test`). Alcanza para los dominios `.test` del simulador; en producción haría falta la Public Suffix List.
 - **Si el DNS pasivo no tiene datos de una IP, la tratamos como compartida** y bloqueamos solo el nombre: preferimos no bloquear de más.
 - **Todas las órdenes vencen en el minuto en que termina el partido**, también las de nombre. Extenderlas requiere una orden nueva, por proporcionalidad.

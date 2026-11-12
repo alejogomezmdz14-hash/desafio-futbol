@@ -2,42 +2,29 @@
 
 Mismas rutas y formas que la app de T11 en Vercel: la web del juez (plataforma/web) funciona igual contra las dos.
 """
-import hmac
-import time
 from pathlib import Path
 from typing import Optional
 
-from fastapi import Depends, FastAPI, Header, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+from plataforma.api.sesion import router as router_sesion, sesion
 from plataforma.motor.motor import Motor
 
 WEB = Path(__file__).resolve().parents[1] / "web"
 
 
-def crear_app(motor: Motor, pin: str) -> FastAPI:
-    """`pin` es obligatorio: sin PIN no se puede decidir nada (falla cerrado)."""
-    if not pin:
-        raise RuntimeError("Falta el PIN del juez (JUEZ_PIN)")
+def crear_app(motor: Motor) -> FastAPI:
+    """Mismo login simple que en Vercel (plataforma/api/sesion.py): COORD_USUARIO, COORD_PASSWORD y SESION_SECRET."""
     app = FastAPI(title="Plataforma federal de órdenes de bloqueo en vivo")
-    fallos: dict = {}            # ip -> (intentos fallidos, bloqueado_hasta)
-    MAX_FALLOS, BLOQUEO_S = 5, 300
-
-    def exigir_pin(request: Request, x_juez_pin: Optional[str] = Header(default=None)) -> None:
-        ip = request.client.host if request.client else "?"
-        n, hasta = fallos.get(ip, (0, 0.0))
-        if time.monotonic() < hasta:
-            raise HTTPException(429, "Demasiados intentos con PIN incorrecto. Esperá 5 minutos.")
-        if not x_juez_pin or not hmac.compare_digest(x_juez_pin.encode(), pin.encode()):
-            n += 1
-            fallos[ip] = (0, time.monotonic() + BLOQUEO_S) if n >= MAX_FALLOS else (n, 0.0)
-            raise HTTPException(status_code=401, detail="PIN inválido o ausente")
-        fallos.pop(ip, None)
+    app.include_router(router_sesion)
 
     @app.exception_handler(HTTPException)
     async def _error(_, exc: HTTPException):
-        return JSONResponse(status_code=exc.status_code, content={"error": exc.detail})
+        detalle = exc.detail
+        return JSONResponse(status_code=exc.status_code,
+                            content=detalle if isinstance(detalle, dict) and "error" in detalle else {"error": detalle})
 
     @app.get("/api/estado")
     def estado():
@@ -54,16 +41,12 @@ def crear_app(motor: Motor, pin: str) -> FastAPI:
             raise HTTPException(404, f"No existe el expediente {expediente_id}")
         return exp
 
-    @app.post("/api/pin/verificar", dependencies=[Depends(exigir_pin)])
-    def verificar_pin():
-        return {"ok": True}
-
-    @app.post("/api/pedidos/aprobar", dependencies=[Depends(exigir_pin)])
+    @app.post("/api/pedidos/aprobar", dependencies=[Depends(sesion)])
     def aprobar(cuerpo: dict):
         r = motor.decidir(cuerpo.get("pedido_ids", []), cuerpo.get("juez_id"), "aprobado")
         return {"aprobados": r["hechos"], "errores": r["errores"], "decidido_min": r["decidido_min"]}
 
-    @app.post("/api/pedidos/rechazar", dependencies=[Depends(exigir_pin)])
+    @app.post("/api/pedidos/rechazar", dependencies=[Depends(sesion)])
     def rechazar(cuerpo: dict):
         motivo = (cuerpo.get("motivo") or "").strip()
         if not motivo:
@@ -71,7 +54,7 @@ def crear_app(motor: Motor, pin: str) -> FastAPI:
         r = motor.decidir(cuerpo.get("pedido_ids", []), cuerpo.get("juez_id"), "rechazado", motivo)
         return {"rechazados": r["hechos"], "errores": r["errores"], "decidido_min": r["decidido_min"]}
 
-    @app.post("/api/turno/asumir", dependencies=[Depends(exigir_pin)])
+    @app.post("/api/turno/asumir", dependencies=[Depends(sesion)])
     def asumir(cuerpo: dict):
         try:
             ratificadas = motor.despacho.ratificar(cuerpo.get("juez_id"))

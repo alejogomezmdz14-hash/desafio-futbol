@@ -27,9 +27,7 @@
      <a href="./">pantalla del juez</a>. Al terminar se muestra la salida del verificador oficial.</p>
 
   <form class="tarjeta" id="form">
-    <label class="campo">PIN de juez
-      <input type="password" id="pin" autocomplete="current-password" required>
-    </label>
+    <p id="sin-sesion" hidden>Primero ingresá con el usuario y la contraseña en la <a href="./">pantalla principal</a>; después volvé acá.</p>
     <label class="campo">Velocidad
       <select id="acelerar">
         <option value="6">x6 · unos 22 minutos</option>
@@ -49,7 +47,9 @@
 </main>
 <script>
 const $ = (id) => document.getElementById(id);
-try { $("pin").value = sessionStorage.getItem("juez_pin") || ""; } catch (e) {}
+let token = null;
+try { token = localStorage.getItem("sesion-coordinacion"); } catch (e) {}
+if (!token) { $("sin-sesion").hidden = false; $("iniciar").disabled = true; }
 
 $("form").addEventListener("submit", async (ev) => {
   ev.preventDefault();
@@ -59,12 +59,12 @@ $("form").addEventListener("submit", async (ev) => {
   try {
     const r = await fetch("/api/demo/iniciar", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-Juez-Pin": $("pin").value },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify({ acelerar: Number($("acelerar").value), juez_automatico: $("auto").checked }),
     });
     const datos = await r.json();
+    if (r.status === 401) { $("sin-sesion").hidden = false; throw new Error(datos.error || "Volvé a ingresar."); }
     if (!r.ok) throw new Error(datos.error || r.statusText);
-    try { sessionStorage.setItem("juez_pin", $("pin").value); } catch (e) {}
     estado.className = "ok";
     estado.textContent = `${datos.mensaje} Dura unos ${Math.round(datos.duracion_min)} minutos.`;
   } catch (e) {

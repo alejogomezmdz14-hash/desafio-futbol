@@ -63,22 +63,15 @@ CREATE TABLE IF NOT EXISTS verificaciones (
   partido_id TEXT PRIMARY KEY, salida TEXT NOT NULL, creada_ts TEXT NOT NULL
 );
 
--- Quién firmó cada decisión (T13): el nombre del link del juez, o "Coordinación (PIN)".
+-- Quién firmó cada decisión: la sesión de la coordinación que tocó firmar (decisión 43).
 CREATE TABLE IF NOT EXISTS firmas (
   partido_id TEXT NOT NULL, pedido_id TEXT NOT NULL,
   firmado_por TEXT NOT NULL, via TEXT NOT NULL, creada_ts TEXT NOT NULL,
   PRIMARY KEY (partido_id, pedido_id)
 );
 
--- Ajustes de la plataforma (T13): por ejemplo, la generación de accesos que permite cortarlos todos.
+-- Ajustes de la plataforma: por ejemplo, los intentos fallidos de login.
 CREATE TABLE IF NOT EXISTS ajustes (
   clave TEXT PRIMARY KEY, valor TEXT NOT NULL
 );
 
--- Usuarios de jueces para login con usuario/correo y contraseña (T14).
-CREATE TABLE IF NOT EXISTS usuarios (
-  usuario       TEXT PRIMARY KEY,
-  nombre        TEXT NOT NULL,
-  password_hash TEXT NOT NULL,
-  creado_ts     TEXT NOT NULL
-);

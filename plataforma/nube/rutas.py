@@ -1,18 +1,18 @@
 """Rutas del partido de demo online (T12). Las monta plataforma/api/app.py.
 
-POST /api/demo/iniciar      (PIN de juez) prende un Vercel Sandbox con simulador + motor y vuelve enseguida.
+POST /api/demo/iniciar      (sesión de la coordinación) prende un Vercel Sandbox con simulador + motor y vuelve enseguida.
 GET  /api/demo/verificacion salida de evaluacion/verificar.py del último partido, cuando termina.
 """
-import hmac
 import os
 import subprocess
 from datetime import timedelta
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from plataforma import db
+from plataforma.api.sesion import sesion
 
 REPO = "https://github.com/alejogomezmdz14-hash/desafio-futbol.git"
 # GitSource clona en /vercel/<nombre del repo>: se busca la carpeta por su requirements.txt.
@@ -24,11 +24,6 @@ ACTIVO_S = 30   # si el motor escribió hace menos de esto y el partido no termi
 router = APIRouter()
 
 
-
-def _pin(x_juez_pin: Optional[str] = Header(default=None)) -> None:
-    esperado = os.environ.get("JUEZ_PIN", "")
-    if not esperado or not x_juez_pin or not hmac.compare_digest(x_juez_pin.encode(), esperado.encode()):
-        raise HTTPException(status_code=401, detail={"error": "PIN de juez inválido"})
 
 
 class PedidoDemo(BaseModel):
@@ -80,7 +75,7 @@ def _hay_partido_corriendo() -> bool:
     return hace < ACTIVO_S
 
 
-@router.post("/api/demo/iniciar", dependencies=[Depends(_pin)])   # cada partido prende un Sandbox: solo coordinación
+@router.post("/api/demo/iniciar", dependencies=[Depends(sesion)])   # cada partido prende un Sandbox: solo coordinación
 async def iniciar_demo(pedido: PedidoDemo):
     if not os.environ.get("DATABASE_URL"):
         raise HTTPException(status_code=409, detail={"error": "La demo necesita DATABASE_URL (base de Neon)"})

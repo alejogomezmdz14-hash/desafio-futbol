@@ -12,7 +12,8 @@ def correr_pruebas() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         ruta_db = Path(tmp) / "test.db"
         os.environ["DATABASE_URL"] = f"sqlite:///{ruta_db}"
-        os.environ["JUEZ_PIN"] = "4321"
+        os.environ["COORD_PASSWORD"] = "clave-de-prueba-4321"
+        os.environ["SESION_SECRET"] = "s" * 40
 
         from fastapi import HTTPException
         from plataforma import db
@@ -28,8 +29,8 @@ def correr_pruebas() -> None:
             api_publico,
             api_reclamos,
             api_rechazar,
-            pin_juez,
         )
+        from plataforma.api.sesion import PedidoLogin, login, sesion
         from plataforma.db.semilla import PARTIDO_DEMO, cargar_semilla
 
         # 1. Semilla y esquema
@@ -51,13 +52,14 @@ def correr_pruebas() -> None:
         exp = api_expediente("EXP-2026-000001")
         assert exp["expediente_id"] == "EXP-2026-000001"
 
-        # Validación de PIN
+        # Login simple de la coordinación (decisión 43)
         try:
-            pin_juez(None)
-            raise AssertionError("Debería fallar sin PIN")
+            sesion(None)
+            raise AssertionError("Debería fallar sin sesión")
         except HTTPException as exc:
             assert exc.status_code == 401
-        pin_juez("4321")
+        tok = login(PedidoLogin(usuario="coordinacion", password="clave-de-prueba-4321"))["token"]
+        assert sesion(f"Bearer {tok}")["nombre"] == "Coordinación"
 
         # Aprobar P-001
         resp_ap = api_aprobar({"pedido_ids": ["P-001"], "juez_id": "jueza-laura-ficticia"})

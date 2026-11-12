@@ -14,7 +14,7 @@ SIMULADOR ──detecciones, DNS pasivo, reclamos──► MOTOR (loop, en Verce
                               POSTGRES (Neon): casos, expedientes, pedidos, ordenes, reclamos, auditoria
                                                   ▲
                               VERCEL (FastAPI) ───┤
-                                 ├─► WEB DEL JUEZ (celular, PIN, aprueba en lote)
+                                 ├─► WEB DEL JUEZ (celular, login, aprueba en lote)
                                  ├─► REGISTRO PÚBLICO
                                  └─► API (contratos §5)
 ```
@@ -77,4 +77,4 @@ Los casos descartados se registran en la auditoría con su motivo. Solo los `pir
 `evaluacion/verificar.py`: 7 de 7 fases bloqueadas, visibilidad residual mínima, 0 colateral, 0 falsos positivos, 0 rechazos, 0 firmas fuera de turno y 0 IP activas después del partido. Línea base (cliente de ejemplo): 1 de 7 y 92,4 %.
 
 ## 8. Fuera de alcance
-Login y usuarios reales (alcanza con el PIN de demo), firma digital real (se explica en el pitch y en la propuesta normativa) y deploy en la nube del motor (corre en la notebook, conectado al simulador que asigne la organización; ver decisión 16).
+Cuentas por juez (alcanza con un login simple de la coordinación, decisión 43), firma digital real (se explica en el pitch y en la propuesta normativa) y deploy en la nube del motor (corre en la notebook, conectado al simulador que asigne la organización; ver decisión 16).

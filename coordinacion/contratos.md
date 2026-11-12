@@ -23,7 +23,7 @@
 
 - **Dónde vive el estado.** La API de §5 ya no la sirve el proceso del motor: la sirve la web en Vercel, que lee y escribe la base Postgres (decisiones 15 a 21). Las rutas, los requests y los responses son los mismos.
 - **Base de datos (§10, nuevo).** Una tabla por contrato, con el dict completo en JSONB. Todas las filas llevan `partido_id`.
-- **`POST /api/pedidos/aprobar`, `/api/pedidos/rechazar`, `/api/turno/asumir` y `/api/reclamos/levantar`** piden el header `X-Juez-Pin` (variable `JUEZ_PIN`). Sin PIN o con un PIN incorrecto → 401 `{"error": ...}`.
+- **`POST /api/pedidos/aprobar`, `/api/pedidos/rechazar`, `/api/turno/asumir`, `/api/reclamos/levantar` y `/api/demo/iniciar`** piden `Authorization: Bearer <token>`. El token sale de `POST /api/login` `{"usuario", "password"}` (login simple de la coordinación, decisión 43; `GET /api/sesion` dice si sigue vigente). Sin sesión o con una vencida: 401 `{"error"}`. Esto reemplaza al header `X-Juez-Pin`.
 - **Aprobar ya no despacha en el acto.** Deja el pedido en `aprobado` y el motor lo despacha en su próximo ciclo (~1 s). La auditoría de la aprobación la escribe el motor.
 
 ## Cambios v0 → v1

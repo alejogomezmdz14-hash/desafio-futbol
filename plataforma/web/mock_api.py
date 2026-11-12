@@ -1,6 +1,6 @@
 """SOLO DESARROLLO de T04: imita la API de T11 (contratos.md §5) para probar la pantalla del juez sin base ni motor.
 
-    uvicorn plataforma.web.mock_api:app --port 8000      ->  http://localhost:8000/juez/   (PIN: 1234)
+    uvicorn plataforma.web.mock_api:app --port 8000      ->  http://localhost:8000/juez/   (usuario coordinacion; la contraseña se imprime al arrancar)
 
 Corre el partido de práctica (datos/escenario_practica.json) con el reloj acelerado (MOCK_ACELERAR, por defecto x10),
 usa el Cerebro real (T01) para armar casos y pedidos, y simula el avance de las órdenes, los reintentos de Cumbre y
@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -25,7 +25,12 @@ RAIZ = Path(__file__).resolve().parents[2]
 WEB = Path(__file__).resolve().parent
 ACELERAR = float(os.environ.get("MOCK_ACELERAR", "10"))
 INICIO_MIN = float(os.environ.get("MOCK_INICIO_MIN", "0"))
-PIN = os.environ.get("JUEZ_PIN", "1234")
+# Login simple (decisión 43): sin contraseña fija, se genera por corrida si no se define COORD_PASSWORD.
+if not os.environ.get("COORD_PASSWORD"):
+    import secrets as _secrets
+    os.environ["COORD_PASSWORD"] = _secrets.token_urlsafe(9)
+    print(f"Mock: usuario coordinacion, contraseña {os.environ['COORD_PASSWORD']}", flush=True)
+os.environ.setdefault("SESION_SECRET", __import__("secrets").token_urlsafe(32))
 ARG = timezone(timedelta(hours=-3))
 
 escenario = json.loads((RAIZ / "datos/escenario_practica.json").read_text(encoding="utf-8"))
@@ -172,14 +177,15 @@ threading.Thread(target=_ciclo, daemon=True).start()
 app = FastAPI(title="Mock API del juez (solo desarrollo)")
 
 
-def exigir_pin(x_juez_pin: Optional[str] = Header(default=None)) -> None:
-    if x_juez_pin != PIN:
-        raise HTTPException(status_code=401, detail="PIN inválido o ausente")
+from plataforma.api.sesion import router as router_sesion, sesion  # noqa: E402
+
+app.include_router(router_sesion)
 
 
 @app.exception_handler(HTTPException)
 async def _error(_, exc: HTTPException):
-    return JSONResponse(status_code=exc.status_code, content={"error": exc.detail})
+    d = exc.detail
+    return JSONResponse(status_code=exc.status_code, content=d if isinstance(d, dict) and "error" in d else {"error": d})
 
 
 @app.get("/api/estado")
@@ -230,13 +236,13 @@ def _decidir(cuerpo: dict, nuevo: str) -> dict:
         return {"hechos": hechos, "errores": errores, "decidido_min": round(m, 2)}
 
 
-@app.post("/api/pedidos/aprobar", dependencies=[Depends(exigir_pin)])
+@app.post("/api/pedidos/aprobar", dependencies=[Depends(sesion)])
 def api_aprobar(cuerpo: dict):
     r = _decidir(cuerpo, "aprobado")
     return {"aprobados": r["hechos"], "errores": r["errores"], "decidido_min": r["decidido_min"]}
 
 
-@app.post("/api/pedidos/rechazar", dependencies=[Depends(exigir_pin)])
+@app.post("/api/pedidos/rechazar", dependencies=[Depends(sesion)])
 def api_rechazar(cuerpo: dict):
     if not (cuerpo.get("motivo") or "").strip():
         raise HTTPException(422, "Rechazar requiere un motivo")
@@ -244,7 +250,7 @@ def api_rechazar(cuerpo: dict):
     return {"rechazados": r["hechos"], "errores": r["errores"], "decidido_min": r["decidido_min"]}
 
 
-@app.post("/api/turno/asumir", dependencies=[Depends(exigir_pin)])
+@app.post("/api/turno/asumir", dependencies=[Depends(sesion)])
 def api_asumir(cuerpo: dict):
     juez = cuerpo.get("juez_id")
     with estado.lock:

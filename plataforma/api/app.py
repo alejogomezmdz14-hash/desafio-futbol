@@ -3,12 +3,10 @@
 Se despliega en Vercel (entrypoint: plataforma.api.app:app) y también se usa en modo local.
 No guarda estado en memoria ni lee claves de firma: todo sale de `plataforma.db`.
 """
-import hmac
-import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -40,20 +38,15 @@ app = FastAPI(title="Plataforma Federal de Órdenes de Bloqueo en Vivo")
 from plataforma.nube.rutas import router as _router_demo  # noqa: E402
 app.include_router(_router_demo)
 
-# T13: accesos de jueces por link que vence. Las rutas que firman aceptan el link o el PIN.
-from plataforma.api.accesos import firmante, router as _router_accesos  # noqa: E402
-app.include_router(_router_accesos)
-
-# T14: login de jueces con usuario/correo y contraseña.
-from plataforma.api.login import router as _router_login  # noqa: E402
-app.include_router(_router_login)
+# Login simple de la coordinación (decisión 43): un usuario y una contraseña. Las rutas que deciden exigen la sesión.
+from plataforma.api.sesion import router as _router_sesion, sesion  # noqa: E402
+app.include_router(_router_sesion)
 
 
 @app.on_event("startup")
 def _startup() -> None:
     try:
         db.crear_esquema()
-        db.asegurar_usuarios_demo()
     except Exception:
         pass
 
@@ -64,12 +57,6 @@ async def _http_error(_, exc: HTTPException):
     if isinstance(detalle, dict) and "error" in detalle:
         return JSONResponse(status_code=exc.status_code, content=detalle)
     return JSONResponse(status_code=exc.status_code, content={"error": str(detalle)})
-
-
-def pin_juez(x_juez_pin: Optional[str] = Header(default=None)) -> None:
-    esperado = os.environ.get("JUEZ_PIN", "")
-    if not esperado or not x_juez_pin or not hmac.compare_digest(x_juez_pin.encode(), esperado.encode()):
-        raise HTTPException(status_code=401, detail={"error": "PIN de juez inválido"})
 
 
 def _partido_o_defecto(partido_id: Optional[str] = None) -> str:
@@ -231,19 +218,13 @@ def _procesar_decision_pedidos(cuerpo: Dict[str, Any], nuevo_estado: str, partid
     return {clave_lista: decididos, "errores": errores, "decidido_min": minuto_actual}
 
 
-@app.post("/api/pin/verificar")
-def verificar_pin(quien: Dict[str, str] = Depends(firmante)):
-    """La pantalla del juez valida el PIN (o el link) al entrar, no recién al firmar."""
-    return {"ok": True, "nombre": quien["nombre"], "via": quien["via"]}
-
-
 @app.post("/api/pedidos/aprobar")
-def api_aprobar(cuerpo: Dict[str, Any], partido_id: Optional[str] = None, quien: Dict[str, str] = Depends(firmante)):
+def api_aprobar(cuerpo: Dict[str, Any], partido_id: Optional[str] = None, quien: Dict[str, str] = Depends(sesion)):
     return _procesar_decision_pedidos(cuerpo, "aprobado", partido_id, quien)
 
 
 @app.post("/api/pedidos/rechazar")
-def api_rechazar(cuerpo: Dict[str, Any], partido_id: Optional[str] = None, quien: Dict[str, str] = Depends(firmante)):
+def api_rechazar(cuerpo: Dict[str, Any], partido_id: Optional[str] = None, quien: Dict[str, str] = Depends(sesion)):
     return _procesar_decision_pedidos(cuerpo, "rechazado", partido_id, quien)
 
 
@@ -265,7 +246,7 @@ def api_reclamos(partido_id: Optional[str] = None):
     return {"reclamos": db.listar("reclamos", pid)}
 
 
-@app.post("/api/turno/asumir", dependencies=[Depends(firmante)])
+@app.post("/api/turno/asumir", dependencies=[Depends(sesion)])
 def api_asumir_turno(cuerpo: Dict[str, Any], partido_id: Optional[str] = None):
     pid = _partido_o_defecto(partido_id)
     juez_id = cuerpo.get("juez_id")
@@ -286,7 +267,7 @@ def api_asumir_turno(cuerpo: Dict[str, Any], partido_id: Optional[str] = None):
     return {"juez_id": juez_id, "ratificadas": vigentes, "decidido_min": minuto_actual}
 
 
-@app.post("/api/reclamos/levantar", dependencies=[Depends(firmante)])
+@app.post("/api/reclamos/levantar", dependencies=[Depends(sesion)])
 def api_levantar_reclamo(cuerpo: Dict[str, Any], partido_id: Optional[str] = None):
     pid = _partido_o_defecto(partido_id)
     reclamo_id = cuerpo.get("reclamo_id")

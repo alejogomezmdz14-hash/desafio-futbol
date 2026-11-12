@@ -4,8 +4,8 @@
     python -m plataforma.main --sim http://localhost:8080 --juez-automatico    # solo para pruebas aceleradas
     python -m plataforma.main --sim URL --exportar-entrega                     # al cerrar, copia a entrega/
 
-La pantalla del juez queda en http://localhost:8000/juez/. El PIN sale de la variable JUEZ_PIN o, si no está, se genera
-al azar y se imprime al arrancar. Con --red escucha en toda la red local (para entrar desde el celular por wifi).
+La pantalla del juez queda en http://localhost:8000/juez/. Se entra con el usuario (COORD_USUARIO, por defecto
+"coordinacion") y la contraseña (COORD_PASSWORD; si no está, se genera al azar y se imprime al arrancar). Con --red escucha en toda la red local (para entrar desde el celular por wifi).
 """
 import argparse
 import os
@@ -52,16 +52,19 @@ def main() -> int:
     if args.sin_web:
         hilo.join()
     else:
-        # Sin PIN fijo: o lo define el juzgado en JUEZ_PIN, o se genera uno al azar por corrida y se muestra acá.
-        pin = os.environ.get("JUEZ_PIN") or secrets.token_urlsafe(6)   # 8 caracteres, 48 bits; se tipea una vez
-        if args.red and len(pin) < 8:
-            print("Con --red el PIN tiene que tener al menos 8 caracteres (JUEZ_PIN).", file=sys.stderr)
+        # Login simple (decisión 43). Sin contraseña fija: o la define la coordinación en COORD_PASSWORD, o se genera.
+        pwd = os.environ.get("COORD_PASSWORD") or os.environ.get("JUEZ_PIN") or secrets.token_urlsafe(9)
+        os.environ["COORD_PASSWORD"] = pwd
+        os.environ.setdefault("SESION_SECRET", secrets.token_urlsafe(32))   # sesiones válidas solo en esta corrida
+        usuario = (os.environ.get("COORD_USUARIO") or "coordinacion").strip().lower()
+        if args.red and len(pwd) < 8:
+            print("Con --red la contraseña tiene que tener al menos 8 caracteres (COORD_PASSWORD).", file=sys.stderr)
             return 2
         host = "0.0.0.0" if args.red else "127.0.0.1"
-        print(f"Pantalla del juez: http://localhost:{args.puerto}/juez/  (PIN: {pin})", flush=True)
+        print(f"Pantalla del juez: http://localhost:{args.puerto}/juez/  (usuario: {usuario}, contraseña: {pwd})", flush=True)
         if args.red:
             print("Escuchando en toda la red local para que el juez entre desde el celular por wifi.", flush=True)
-        servidor = uvicorn.Server(uvicorn.Config(crear_app(motor, pin), host=host, port=args.puerto, log_level="warning"))
+        servidor = uvicorn.Server(uvicorn.Config(crear_app(motor), host=host, port=args.puerto, log_level="warning"))
         threading.Thread(target=servidor.run, daemon=True).start()
         hilo.join()
         servidor.should_exit = True
