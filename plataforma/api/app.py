@@ -191,6 +191,9 @@ def _procesar_decision_pedidos(cuerpo: Dict[str, Any], nuevo_estado: str, partid
         raise HTTPException(status_code=409, detail=f"{juez_id} no está de turno en el minuto {minuto_err}")
 
     minuto_actual = round(float(est_partido["minuto_actual"]), 2)
+    if est_partido.get("finalizado") or minuto_actual >= float(est_partido.get("fin_min") or 105):
+        # Una firma después del final no tiene efecto (las órdenes vencerían al instante) y confunde al juez.
+        raise HTTPException(status_code=409, detail="El partido ya terminó: no se pueden firmar pedidos")
 
     decididos: List[str] = []
     errores: List[Dict[str, str]] = []
