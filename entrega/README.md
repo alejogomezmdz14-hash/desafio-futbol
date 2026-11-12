@@ -145,7 +145,7 @@ Dos corridas del partido de práctica. Cada una tiene su evidencia (expediente c
 ## Entregables (`entrega/`)
 - `README.md`: este archivo.
 - [`escenarios-y-modelo.md`](escenarios-y-modelo.md): cada escenario (del partido y del mundo real), cómo lo resuelve la plataforma, quién paga y el camino a producción.
-- [`video-pitch.mp4`](video-pitch.mp4): **video del pitch** (2:58), con subtítulos. Los subtítulos sueltos están en [`video-pitch.srt`](video-pitch.srt).
+- **Video del pitch** (2:58, con subtítulos): [en Google Drive](https://drive.google.com/file/d/13LJJsUij3JoVxd3yyLj61Qy19zkRFPBb/view?usp=sharing), que es el link cargado en Hacki, y el mismo archivo en el repo: [`video-pitch.mp4`](video-pitch.mp4). Los subtítulos sueltos están en [`video-pitch.srt`](video-pitch.srt).
 - [`pitch.md`](pitch.md): guion del pitch y del video de 3 minutos.
 - `propuesta-normativa.md`: 1 página (T08).
 - `expediente-final.json` y `auditoria-final.jsonl`: exportados del partido final (T03).
