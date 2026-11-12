@@ -2,9 +2,9 @@
 id: T14
 titulo: Login de jueces con usuario y contraseña (sobre los tokens de T13)
 carpeta: plataforma/api/login.py, plataforma/db/, ingreso de plataforma/web/
-estado: en-curso
+estado: hecha
 dueno: selene
-desde: 2026-11-12 13:40
+desde: 2026-11-12 14:37
 creada_por: alejo
 depende_de: T13
 ---

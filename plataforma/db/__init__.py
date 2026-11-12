@@ -477,7 +477,7 @@ _SCRYPT_P = 1
 _SCRYPT_DKLEN = 32
 
 USUARIOS_DEMO = (
-    ("juez@juzgado.gob.ar", "Dra. Laura Ficticia"),
+    ("jueza.laura@juzgado.test", "Dra. Laura Ficticia"),
 )
 
 
@@ -547,8 +547,13 @@ def obtener_usuario(usuario: str) -> Optional[Dict[str, str]]:
 
 
 def asegurar_usuarios_demo() -> None:
-    """Garantiza que los usuarios de demo existan con la clave configurada o '123456' por defecto."""
-    clave_demo = (os.environ.get("DEMO_PASSWORD") or "123456").strip()
+    """Crea los usuarios de demo SOLO si DEMO_PASSWORD está configurada en Vercel (8 caracteres o más).
+
+    Nunca hay contraseña por defecto: la web es pública y una clave conocida dejaría firmar a cualquiera.
+    """
+    clave_demo = (os.environ.get("DEMO_PASSWORD") or "").strip()
+    if len(clave_demo) < 8:
+        return
     for usr, nom in USUARIOS_DEMO:
         if obtener_usuario(usr) is None:
             guardar_usuario(usr, nom, clave_demo)
@@ -573,8 +578,5 @@ def autenticar_usuario(usuario: str, password: str) -> Optional[Dict[str, str]]:
         return None
     if verificar_password(password, reg["password_hash"]):
         return {"usuario": reg["usuario"], "nombre": reg["nombre"]}
-    # También permitir entrar si la contraseña coincide con JUEZ_PIN en Vercel (por si cambiaron JUEZ_PIN allí)
-    pin_env = (os.environ.get("JUEZ_PIN") or "").strip()
-    if pin_env and hmac.compare_digest(password.encode("utf-8"), pin_env.encode("utf-8")):
-        return {"usuario": reg["usuario"], "nombre": reg["nombre"]}
+    # Sin atajos: el PIN no sirve como contraseña de un juez (la firma quedaría a su nombre sin que la haga él).
     return None

@@ -35,21 +35,19 @@
       <form id="form-login">
         <div class="ingreso__campo">
           <label for="usuario">Usuario o correo electrónico</label>
-          <input id="usuario" name="usuario" class="ingreso__input-normal" type="text" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="juez@juzgado.gob.ar" value="juez@juzgado.gob.ar" required>
+          <input id="usuario" name="usuario" class="ingreso__input-normal" type="text" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="nombre@juzgado.test" required>
         </div>
 
         <div class="ingreso__campo">
           <label for="password">Contraseña</label>
-          <input id="password" name="password" class="ingreso__input-normal" type="password" autocomplete="current-password" placeholder="••••••" value="123456" required>
+          <input id="password" name="password" class="ingreso__input-normal" type="password" autocomplete="current-password" required>
         </div>
 
         <p class="ingreso__error" id="login-error" role="alert"></p>
         <button type="submit" class="boton boton--firmar boton--ancho" id="btn-login">Ingresar al despacho</button>
       </form>
 
-      <div class="ingreso__demo-ayuda">
-        <span class="ingreso__demo-titulo">Cuenta de prueba para la demo: <code>juez@juzgado.gob.ar</code> · Clave: <code>123456</code></span>
-      </div>
+      <p class="ingreso__demo-ayuda">¿No tenés usuario? Pedíselo a la coordinación del juzgado.</p>
     </div>
   </section>
 

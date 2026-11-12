@@ -1,7 +1,7 @@
 """Login de jueces con usuario/correo y contraseña para la demo (T14).
 
-Permite iniciar sesión con correo/usuario y contraseña (cuenta de demo precargada:
-juez@juzgado.gob.ar / 123456) y alta de usuarios en /api/usuarios.
+Permite iniciar sesión con correo/usuario y contraseña y dar de alta usuarios en /api/usuarios (solo con PIN).
+El login entrega el mismo token que los accesos de T13. No hay cuentas ni contraseñas por defecto.
 """
 import json
 import time
@@ -65,8 +65,8 @@ def crear_usuario(datos: AltaUsuario):
     password = datos.password or ""
     if len(usuario) < 2 or len(nombre) < 2:
         raise HTTPException(status_code=400, detail={"error": "Completá el usuario y el nombre del juez"})
-    if len(password) < 6:
-        raise HTTPException(status_code=400, detail={"error": "La contraseña debe tener al menos 6 caracteres"})
+    if len(password) < 8:
+        raise HTTPException(status_code=400, detail={"error": "La contraseña debe tener al menos 8 caracteres"})
     db.guardar_usuario(usuario, nombre, password)
     _limpiar_fallos(usuario)
     return {"ok": True, "usuario": usuario, "nombre": nombre}
@@ -93,17 +93,10 @@ def login_juez(pedido: PedidoLogin):
         raise HTTPException(status_code=401, detail={"error": "Usuario o contraseña incorrectos"})
 
     _limpiar_fallos(usuario)
-    try:
-        tok = accesos.crear_token(autenticado["nombre"], horas=12)
-        token_str = tok["token"]
-        vence_epoch = tok["vence_epoch"]
-    except HTTPException:
-        # En modo demo local con SQLite sin SESION_SECRET configurada, generar token con clave local de desarrollo
-        import os
-        os.environ["SESION_SECRET"] = "clave-demo-local-juzgado-federal-2026-segura"
-        tok = accesos.crear_token(autenticado["nombre"], horas=12)
-        token_str = tok["token"]
-        vence_epoch = tok["vence_epoch"]
+    # Sin clave de firma la plataforma falla cerrado (503): nunca se firma con una clave escrita en el código.
+    tok = accesos.crear_token(autenticado["nombre"], horas=12)
+    token_str = tok["token"]
+    vence_epoch = tok["vence_epoch"]
 
     return {
         "ok": True,

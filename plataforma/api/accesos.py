@@ -79,9 +79,9 @@ def validar_token(token: str) -> Dict[str, Any]:
         raise HTTPException(status_code=401, detail={"error": "El link de acceso no es válido"})
     datos = json.loads(_de_b64(cuerpo))
     if time.time() >= datos["exp"]:
-        raise HTTPException(status_code=401, detail={"error": "Tu acceso venció. Pedile un link nuevo a la coordinación."})
+        raise HTTPException(status_code=401, detail={"error": "Tu sesión venció. Volvé a ingresar con tu usuario y contraseña."})
     if datos.get("g") != generacion():
-        raise HTTPException(status_code=401, detail={"error": "Tu acceso fue cortado. Pedile un link nuevo a la coordinación."})
+        raise HTTPException(status_code=401, detail={"error": "Tu sesión fue cerrada por la coordinación. Volvé a ingresar con tu usuario y contraseña."})
     return datos
 
 
@@ -127,7 +127,7 @@ def crear_acceso(pedido: NuevoAcceso):
 def cortar_accesos():
     nueva = generacion() + 1
     db.escribir_ajuste(AJUSTE_GENERACION, str(nueva))
-    return {"cortados": True, "mensaje": "Todos los links emitidos hasta ahora dejaron de funcionar."}
+    return {"cortados": True, "mensaje": "Se cerró la sesión de todos los jueces."}
 
 
 @router.get("/api/accesos/yo")

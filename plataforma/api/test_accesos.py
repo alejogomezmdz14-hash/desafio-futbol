@@ -72,7 +72,7 @@ with TestClient(app) as c:
     prueba("cortar todos los accesos con PIN da 200", r.status_code == 200)
     r = c.post(f"/api/pedidos/aprobar?partido_id={pid}", json={"pedido_ids": ["P-902"], "juez_id": juez}, headers=con_link(link))
     prueba("después de cortar, el link viejo no firma y explica que fue cortado",
-           r.status_code == 401 and "cortado" in r.json()["error"])
+           r.status_code == 401 and "cerrada" in r.json()["error"])
     nuevo = c.post("/api/accesos", json={"nombre": "Dra. Nueva", "horas": 1}, headers=PIN).json()["link"]
     r = c.post(f"/api/pedidos/aprobar?partido_id={pid}", json={"pedido_ids": ["P-902"], "juez_id": juez}, headers=con_link(nuevo))
     prueba("un link creado después de cortar funciona", r.status_code == 200 and r.json()["aprobados"] == ["P-902"])

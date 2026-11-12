@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#14213D">
-  <title>Accesos de jueces</title>
+  <title>Jueces de la plataforma</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -28,8 +28,8 @@
 </head>
 <body>
 <main class="acc">
-  <h1>Accesos de jueces</h1>
-  <p class="ayuda">Creá un link para cada juez. El juez lo abre en el celular y entra directo a firmar. El link vence solo a la hora que elijas, y cada firma queda con su nombre.</p>
+  <h1>Jueces de la plataforma</h1>
+  <p class="ayuda">Dale a cada juez su usuario y contraseña. El juez entra en la pantalla de firma con eso, su sesión dura 12 horas y cada firma queda con su nombre.</p>
 
   <section class="tarjeta">
     <h2>PIN de la coordinación</h2>
@@ -39,46 +39,25 @@
   </section>
 
   <form class="tarjeta" id="form-usuario">
-    <h2>Usuarios de jueces (correo y contraseña)</h2>
+    <h2>Dar de alta un juez</h2>
     <label class="campo">Usuario o correo electrónico
-      <input id="usr-id" placeholder="laura@juzgado.gob.ar" maxlength="80" required>
+      <input id="usr-id" placeholder="laura@juzgado.test" maxlength="80" required>
     </label>
     <label class="campo">Nombre del juez
       <input id="usr-nombre" placeholder="Dra. Laura Ficticia" maxlength="60" required>
     </label>
-    <label class="campo">Contraseña (6 caracteres o más, ej: 123456)
-      <input type="password" id="usr-pass" placeholder="123456" minlength="6" required>
+    <label class="campo">Contraseña (8 caracteres o más)
+      <input type="password" id="usr-pass" minlength="8" autocomplete="new-password" required>
     </label>
     <button type="submit" class="boton boton--firmar boton--ancho">Guardar usuario de juez</button>
     <p class="msg" id="msg-usuario" aria-live="polite"></p>
   </form>
 
-  <form class="tarjeta" id="form-crear">
-    <h2>Crear un acceso</h2>
-    <label class="campo">Nombre del juez
-      <input id="nombre" placeholder="Dra. Laura Ficticia" maxlength="60" required>
-    </label>
-    <label class="campo">Dura
-      <select id="horas">
-        <option value="1">1 hora</option>
-        <option value="2" selected>2 horas</option>
-        <option value="4">4 horas</option>
-        <option value="8">8 horas</option>
-        <option value="12">12 horas</option>
-      </select>
-    </label>
-    <button type="submit" class="boton boton--firmar boton--ancho">Crear link</button>
-    <p class="msg" id="msg-crear" aria-live="polite"></p>
-    <div class="link" id="caja-link" hidden>
-      <input id="link" readonly aria-label="Link de acceso">
-      <button type="button" class="boton boton--suave" id="copiar">Copiar</button>
-    </div>
-  </form>
 
   <section class="tarjeta">
-    <h2>Cortar todos los accesos</h2>
-    <p class="ayuda">Si un link se compartió de más o terminó la demo, esto apaga todos los links creados hasta ahora. Los jueces que sigan necesitando entrar van a necesitar un link nuevo.</p>
-    <button type="button" class="boton boton--peligro boton--ancho" id="cortar">Cortar todos los accesos</button>
+    <h2>Cerrar la sesión de todos</h2>
+    <p class="ayuda">Cierra la sesión de todos los jueces de golpe (por ejemplo, al terminar la demo). Para volver a entrar, cada uno pone de nuevo su usuario y contraseña.</p>
+    <button type="button" class="boton boton--peligro boton--ancho" id="cortar">Cerrar la sesión de todos los jueces</button>
     <p class="msg" id="msg-cortar" aria-live="polite"></p>
   </section>
 
@@ -113,27 +92,10 @@ $("form-usuario").addEventListener("submit", async (ev) => {
   } catch (e) { msg.className = "msg error"; msg.textContent = e.message; }
 });
 
-$("form-crear").addEventListener("submit", async (ev) => {
-  ev.preventDefault();
-  const msg = $("msg-crear"); msg.className = "msg"; msg.textContent = "Creando…"; $("caja-link").hidden = true;
-  try {
-    const d = await llamar("/api/accesos", { nombre: $("nombre").value, horas: Number($("horas").value) });
-    const hasta = new Date(d.vence_epoch * 1000).toLocaleString("es-AR", { weekday: "long", hour: "2-digit", minute: "2-digit" });
-    $("link").value = d.link; $("caja-link").hidden = false;
-    msg.className = "msg ok"; msg.textContent = `Listo. Pasale este link a ${d.nombre}. Funciona hasta el ${hasta.replace(/\.$/, "")}.`;
-  } catch (e) { msg.className = "msg error"; msg.textContent = e.message; }
-});
-
-$("copiar").addEventListener("click", async () => {
-  try { await navigator.clipboard.writeText($("link").value); $("copiar").textContent = "Copiado"; }
-  catch (e) { $("link").select(); }
-  setTimeout(() => { $("copiar").textContent = "Copiar"; }, 2000);
-});
-
 $("cortar").addEventListener("click", async () => {
   const msg = $("msg-cortar");
-  if (!confirm("¿Cortar todos los accesos? Todos los links creados hasta ahora dejan de funcionar.")) return;
-  msg.className = "msg"; msg.textContent = "Cortando…";
+  if (!confirm("¿Cerrar la sesión de todos los jueces? Van a tener que volver a ingresar con su usuario y contraseña.")) return;
+  msg.className = "msg"; msg.textContent = "Cerrando sesiones…";
   try { const d = await llamar("/api/accesos/cortar"); msg.className = "msg ok"; msg.textContent = d.mensaje; }
   catch (e) { msg.className = "msg error"; msg.textContent = e.message; }
 });

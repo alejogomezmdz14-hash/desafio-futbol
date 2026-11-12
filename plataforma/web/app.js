@@ -182,11 +182,11 @@ function renderEstado(e) {
     // Sin partido en juego no hay nada para firmar: se dice claro y se ofrece arrancar uno de práctica.
     quitarAviso("desconectado");
     if (!document.querySelector('[data-aviso="sin-partido"]')) {
-      aviso(estado.pin
+      aviso((estado.pin || estado.token)
         ? "El último partido ya terminó, así que no hay pedidos para firmar. Arrancá uno de práctica para probar: en unos 30 segundos aparecen los pedidos acá."
         : "El último partido ya terminó, así que no hay pedidos para firmar. Cuando la coordinación arranque el próximo, aparecen acá solos.",
         "info", { id: "sin-partido", titulo: "No hay partido en juego",
-                  boton: estado.pin ? { texto: "Arrancar partido de práctica", accion: arrancarPractica } : null });
+                  boton: (estado.pin || estado.token) ? { texto: "Arrancar partido de práctica", accion: arrancarPractica } : null });
     }
   } else {
     quitarAviso("sin-partido");
@@ -443,13 +443,6 @@ if ($("form-login")) {
   });
 }
 
-for (const chip of document.querySelectorAll(".chip-demo")) {
-  chip.addEventListener("click", () => {
-    if ($("usuario")) $("usuario").value = chip.dataset.usr || "";
-    if ($("password")) $("password").value = chip.dataset.pass || "123456";
-    if ($("form-login")) $("form-login").requestSubmit();
-  });
-}
 
 $("firmar-todos").addEventListener("click", () => firmar(estado.pendientes.map((p) => p.pedido_id)));
 document.addEventListener("click", prepararAvisos, { once: true });

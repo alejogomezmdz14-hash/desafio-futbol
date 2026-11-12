@@ -24,6 +24,12 @@ ACTIVO_S = 30   # si el motor escribió hace menos de esto y el partido no termi
 router = APIRouter()
 
 
+def _firmante(x_juez_pin: Optional[str] = Header(default=None), authorization: Optional[str] = Header(default=None)):
+    """Arrancar un partido de práctica: con PIN o con la sesión de un juez (login o link)."""
+    from plataforma.api.accesos import firmante
+    return firmante(x_juez_pin, authorization)
+
+
 def _pin(x_juez_pin: Optional[str] = Header(default=None)) -> None:
     esperado = os.environ.get("JUEZ_PIN", "")
     if not esperado or not x_juez_pin or not hmac.compare_digest(x_juez_pin.encode(), esperado.encode()):
@@ -79,7 +85,7 @@ def _hay_partido_corriendo() -> bool:
     return hace < ACTIVO_S
 
 
-@router.post("/api/demo/iniciar", dependencies=[Depends(_pin)])
+@router.post("/api/demo/iniciar", dependencies=[Depends(_firmante)])
 async def iniciar_demo(pedido: PedidoDemo):
     if not os.environ.get("DATABASE_URL"):
         raise HTTPException(status_code=409, detail={"error": "La demo necesita DATABASE_URL (base de Neon)"})
