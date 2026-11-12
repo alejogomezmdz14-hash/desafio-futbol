@@ -1,12 +1,74 @@
 # Pitch y video
 
-**La idea en una frase:** un juez de turno firma desde el celular en segundos, y la orden de bloqueo llega a todos los proveedores de internet del país, no solo a los grandes, con evidencia que nadie puede trucar.
+**La idea en una frase (versión vendible):** hicimos **el VAR de la piratería**: el juez ve la jugada en el celular, cobra en segundos, la orden llega a todos los proveedores de internet a la vez, y se apaga sola con el pitazo final.
 
 Los números salen solo del verificador oficial. Hoy son los del partido de práctica; el viernes se reemplazan por los del final si cambian.
 
 ---
 
-## Pitch (3 minutos)
+## Cómo tiene que sonar (lo que nos dejó la mentoría)
+
+- **Problema → solución con un giro que se entiende solo.** El ejemplo del mentor: *apuestas online en menores* → *lotería sin pérdida, porque la plata se invierte y el premio sale de los intereses*. El giro conserva lo que la gente quiere y le saca el daño. El nuestro: **un bloqueo que llega en segundos, a todos, y dura lo que dura el partido** (como una tarjeta: vale para ese partido).
+- **Del video de ejemplo (Cosecha Pay):** arranca con nombre + producto, dice "resuelve **tres problemas muy concretos**" desde el lado de las personas, y la solución en una frase ("bloquear el pago antes de que empiece el trabajo"). Donde se pierde es cuando se mete en arquitectura (Soroban, Horizon, claimable balance): eso no lo entiende nadie del público. **Nosotros no hablamos de tecnología en el escenario; la tecnología se muestra en la demo.**
+- **Analogías de fútbol**, que acá las entiende todo el mundo: VAR, tarjeta, pitazo final.
+- El público también mira fútbol pirata: **no los retamos**. El enemigo es el sitio trucho, no el que mira.
+
+### Palabras que no se dicen arriba del escenario
+
+| En vez de… | Decimos… |
+|---|---|
+| ISP, proveedor | "las empresas de internet, de las grandes a la cooperativa del pueblo" |
+| IP | "la dirección del servidor" |
+| IP compartida, CDN | "un edificio con muchos vecinos" |
+| dominio, DNS | "el nombre de la página" |
+| marca de agua | "una firma invisible que va dentro de la imagen del partido" |
+| hash, SHA-256 | "la huella digital del expediente" |
+| auditoría inalterable | "un registro que nadie puede borrar ni tocar" |
+| HMAC, ASN, RPZ, Ley 27.078, Europa | Nada. Solo si preguntan (ver tabla de preguntas). |
+
+---
+
+## Pitch vendible (3 minutos) — ESTE es el que se dice
+
+### 1. Gancho (0:00–0:15)
+> "Levanten la mano los que alguna vez vieron un partido en una página trucha. … Tranquilos, no somos la policía. El problema no son ustedes: son las páginas. Y muchas de esas páginas, encima, te roban los datos de la tarjeta."
+
+*(Fuente: la Justicia bajó ~300 páginas de fútbol pirata, clones de Fútbol Libre, que robaban datos bancarios — `reports/` §1.)*
+
+### 2. El problema: tres problemas muy concretos (0:15–0:50)
+> "Hoy, para cortar un partido pirata, la orden de un juez pasa de mano en mano: fiscalía, juzgado, el ENACOM, las cámaras, y recién ahí más de mil empresas de internet. El partido dura dos horas. La página pirata se muda de dirección en minutos. Eso genera tres problemas:
+> **Uno: llega tarde.** Cuando se aplica el bloqueo, la página ya se mudó.
+> **Dos: llega a medias.** Las empresas grandes bloquean; la cooperativa de un pueblo de la Puna ni se entera.
+> **Tres: rompe cosas.** Si bloqueás mal, se cae también la página de la panadería del barrio que vivía en el mismo servidor. Y nadie sabe quién bloqueó qué, ni hasta cuándo."
+
+### 3. La solución (0:50–1:10)
+> "Por eso hicimos **el VAR de la piratería**. Igual que el VAR: la jugada llega grabada, el juez la mira, cobra, y la decisión vale en toda la cancha al mismo tiempo.
+> La plataforma encuentra la página pirata y arma la prueba sola. Al juez de turno le llega al celular y firma con un toque. La orden llega a **todas** las empresas de internet a la vez, de la más grande a la más chica, y cada una contesta 'listo'.
+> Y como una tarjeta, **vale para ese partido**: con el pitazo final, el bloqueo se apaga solo."
+
+### 4. Demo en vivo (1:10–2:20)
+Una persona maneja el celular del juez, proyectado. Otra narra. Frases cortas, sin tecnicismos:
+1. **"Le vibra el celular al juez."** Llega `s1.pelotaya.test`. Leer las cuatro líneas en criollo: "Es nuestro partido, lo dice la firma invisible de la imagen. El video sale de acá. Se bloquea esto. Hasta el final del partido."
+2. **El edificio.** Pedido de `live.golazo-libre.test`: "Esta página vive en un edificio con 11 vecinos que no hicieron nada. Cortar la dirección es cortarle la luz a todo el edificio. Nosotros apagamos solo su departamento: bloqueamos el nombre."
+3. **No se equivoca.** "Este canal tiene los derechos y pasa el partido legalmente: no lo toca."
+4. **Un toque, todos en verde.** Firmar los N pedidos. "Esta empresa falló: la plataforma reintentó sola. Esta otra es chiquita y solo sabe bloquear nombres: le mandamos lo que puede hacer."
+5. **Cambio de turno, minuto 50** *(cortar si vamos justos de tiempo)*. "Cambia el juez de turno: el nuevo confirma con un toque."
+6. **Nadie puede trucar la prueba.** Tocar una línea del registro y correr la verificación: "Si alguien cambia una coma, salta la alarma en la línea exacta."
+
+### 5. El resultado: un número que se entiende (2:20–2:40)
+> "Lo probamos en el simulador oficial del desafío. Con la solución básica que traía el desafío, **el 92 % de la gente veía el partido pirata igual**. Con la nuestra, **el 3 %**. Las 7 páginas piratas bloqueadas, en todas las empresas, en menos de un minuto cada una. Y **cero** páginas inocentes rotas."
+
+*(Mismos números que la sección 4 del guion anterior; si la corrida del final cambia, se cambian acá.)*
+
+### 6. Quién paga (2:40–2:52)
+> "Lo paga el que pierde la plata: los dueños de los derechos del fútbol. Para el juez y para las empresas de internet es gratis. Para arrancar alcanza con un partido de prueba de la liga."
+
+### 7. Cierre (2:52–3:00)
+> "Hoy la piratería juega sin árbitro. Nosotros le pusimos uno: rápido, justo, y que llega a todos. Somos Alejo, Selene, Luciano, Rocío y Nahuel."
+
+---
+
+## Guion anterior (técnico) — ya no se dice entero; sirve de respaldo para las preguntas
 
 ### 1. El problema (0:00–0:30)
 > "El 1 de noviembre, antes del Superclásico, la Justicia tuvo que pedir el bloqueo de 182 sitios piratas. Un partido dura dos horas; un sitio pirata cambia de servidor en minutos.
@@ -67,6 +129,7 @@ Respuestas de 15 segundos. El detalle y las fuentes están en `coordinacion/inve
 | ¿No viola la neutralidad de red? | El art. 56 la garantiza y el art. 57 admite el bloqueo con orden judicial. Cada orden la tiene, con alcance y vencimiento. |
 | ¿El Estado va a vigilar qué mira la gente? | No. Se detectan streams piratas, no usuarios. Los expedientes no tienen datos de abonados. |
 | ¿Cuánto cuesta? | De nube, entre 20 y 60 dólares por mes para 30 partidos (estimación nuestra con precios de Vercel y Neon). Lo caro es la operación, y la cubre el titular. |
+| ¿Por qué no copian a Italia o España? | Italia bloquea sin juez y rompió miles de sitios legítimos. España tiene juez, pero la lista la arma LaLiga: unas 3.000 IP por fin de semana con una sentencia que nombra 120. Y acá la Ley 27.078 (art. 57) exige orden judicial: el juez no se saca, se lo pone en el centro. |
 | ¿Lo que vimos es real? | Decir qué está simulado (proveedores, firma HMAC, datos) y qué no. |
 
 ## Números que no decimos en el escenario
