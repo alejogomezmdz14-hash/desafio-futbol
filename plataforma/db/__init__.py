@@ -3,8 +3,11 @@
 Funciona igual con Postgres (DATABASE_URL=postgres://... o postgresql://...) y con
 SQLite en modo local (DATABASE_URL=sqlite:///salida/plataforma.db).
 """
+import hashlib
+import hmac
 import json
 import os
+import secrets
 import sqlite3
 import threading
 import uuid
@@ -462,3 +465,116 @@ def escribir_ajuste(clave: str, valor: str) -> None:
     with _sesion() as (_, cur, pg):
         cur.execute(_q("INSERT INTO ajustes (clave, valor) VALUES (?, ?) "
                        "ON CONFLICT (clave) DO UPDATE SET valor = EXCLUDED.valor", pg), (clave, valor))
+
+
+# =====================================================================================
+# Usuarios para login con correo/usuario y contraseña (Demo / T14)
+# =====================================================================================
+
+_SCRYPT_N = 16384
+_SCRYPT_R = 8
+_SCRYPT_P = 1
+_SCRYPT_DKLEN = 32
+
+USUARIOS_DEMO = (
+    ("juez@juzgado.gob.ar", "Dra. Laura Ficticia"),
+)
+
+
+def hash_password(password: str, salt: Optional[bytes] = None) -> str:
+    s = salt if salt is not None else secrets.token_bytes(16)
+    dk = hashlib.scrypt(
+        password.encode("utf-8"),
+        salt=s,
+        n=_SCRYPT_N,
+        r=_SCRYPT_R,
+        p=_SCRYPT_P,
+        dklen=_SCRYPT_DKLEN,
+    )
+    return f"scrypt${s.hex()}${dk.hex()}"
+
+
+def verificar_password(password: str, password_hash: str) -> bool:
+    try:
+        partes = (password_hash or "").split("$")
+        if len(partes) != 3 or partes[0] != "scrypt":
+            return False
+        salt = bytes.fromhex(partes[1])
+        esperado = bytes.fromhex(partes[2])
+        calculado = hashlib.scrypt(
+            password.encode("utf-8"),
+            salt=salt,
+            n=_SCRYPT_N,
+            r=_SCRYPT_R,
+            p=_SCRYPT_P,
+            dklen=len(esperado),
+        )
+        return hmac.compare_digest(calculado, esperado)
+    except Exception:
+        return False
+
+
+def guardar_usuario(usuario: str, nombre: str, password: str) -> None:
+    u = usuario.strip().lower()
+    phash = hash_password(password)
+    ts = ahora_ts()
+    with _sesion() as (_, cur, pg):
+        sql = (
+            "INSERT INTO usuarios (usuario, nombre, password_hash, creado_ts) VALUES (?, ?, ?, ?) "
+            "ON CONFLICT (usuario) DO UPDATE SET nombre = EXCLUDED.nombre, password_hash = EXCLUDED.password_hash"
+        )
+        cur.execute(_q(sql, pg), (u, nombre.strip(), phash, ts))
+
+
+def obtener_usuario(usuario: str) -> Optional[Dict[str, str]]:
+    u = (usuario or "").strip().lower()
+    if not u:
+        return None
+    with _sesion() as (_, cur, pg):
+        cur.execute(
+            _q("SELECT usuario, nombre, password_hash, creado_ts FROM usuarios WHERE usuario = ?", pg),
+            (u,),
+        )
+        fila = cur.fetchone()
+    if not fila:
+        return None
+    return {
+        "usuario": fila[0],
+        "nombre": fila[1],
+        "password_hash": fila[2],
+        "creado_ts": fila[3],
+    }
+
+
+def asegurar_usuarios_demo() -> None:
+    """Garantiza que los usuarios de demo existan con la clave configurada o '123456' por defecto."""
+    clave_demo = (os.environ.get("DEMO_PASSWORD") or "123456").strip()
+    for usr, nom in USUARIOS_DEMO:
+        if obtener_usuario(usr) is None:
+            guardar_usuario(usr, nom, clave_demo)
+
+
+_HASH_FICTICIO = hash_password("clave-ficticia-tiempo-constante", salt=b"0123456789abcdef")
+
+
+def autenticar_usuario(usuario: str, password: str) -> Optional[Dict[str, str]]:
+    u_id = (usuario or "").strip().lower()
+    if not u_id or not password:
+        return None
+    reg = obtener_usuario(u_id)
+    if reg is None:
+        try:
+            asegurar_usuarios_demo()
+            reg = obtener_usuario(u_id)
+        except Exception:
+            reg = None
+    if not reg:
+        verificar_password(password, _HASH_FICTICIO)
+        return None
+    if verificar_password(password, reg["password_hash"]):
+        return {"usuario": reg["usuario"], "nombre": reg["nombre"]}
+    # También permitir entrar si la contraseña coincide con JUEZ_PIN en Vercel (por si cambiaron JUEZ_PIN allí)
+    pin_env = (os.environ.get("JUEZ_PIN") or "").strip()
+    if pin_env and hmac.compare_digest(password.encode("utf-8"), pin_env.encode("utf-8")):
+        return {"usuario": reg["usuario"], "nombre": reg["nombre"]}
+    return None

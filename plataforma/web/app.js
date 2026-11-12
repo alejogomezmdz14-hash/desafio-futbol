@@ -34,9 +34,21 @@ function mostrarAcceso(datos) {
     el = document.createElement("p"); el.id = "acceso"; el.className = "turno";
     document.querySelector(".marcador__texto").appendChild(el);
   }
-  if (!datos) { el.textContent = ""; return; }
-  const vence = datos.vence_epoch ? new Date(datos.vence_epoch * 1000).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }) : null;
-  el.textContent = `Firma: ${datos.nombre}${vence ? ` · acceso hasta las ${vence}` : ""}`;
+  el.replaceChildren();
+  if (!datos || !datos.nombre) return;
+  const span = document.createElement("span");
+  span.textContent = `Sesión: ${datos.nombre}`;
+  const btnSalir = document.createElement("button");
+  btnSalir.type = "button";
+  btnSalir.className = "btn-salir-sesion";
+  btnSalir.textContent = "Cerrar sesión";
+  btnSalir.addEventListener("click", () => {
+    estado.token = null; guardarToken(null);
+    estado.pin = null; guardarPin(null);
+    mostrarAcceso(null);
+    pedirPin("");
+  });
+  el.append(span, btnSalir);
 }
 
 function guardarPin(pin) { try { pin ? localStorage.setItem(CLAVE_PIN, pin) : localStorage.removeItem(CLAVE_PIN); } catch { /* sin storage */ } }
@@ -387,34 +399,63 @@ async function refrescar() {
 
 function pedirPin(error = "") {
   estado.pin = null; guardarPin(null);
+  estado.token = null; guardarToken(null);
   $("tablero").hidden = true; $("accion").hidden = true; $("ingreso").hidden = false;
-  $("pin-error").textContent = error;
-  $("pin").focus();
+  if ($("login-error")) $("login-error").textContent = error;
+  if ($("usuario")) $("usuario").focus();
 }
 
 function entrar() {
   $("ingreso").hidden = true; $("tablero").hidden = false; $("accion").hidden = false;
+  if ($("login-error")) $("login-error").textContent = "";
   refrescar();
 }
 
-$("form-pin").addEventListener("submit", async (ev) => {
-  ev.preventDefault();
-  estado.pin = $("pin").value.trim().replace(/^["']+|["']+$/g, "");   // por si se pega con las comillas de .env
-  prepararAvisos();
-  try {
-    const quien = await api("/api/pin/verificar", {});   // si el PIN está mal, api() vuelve a pedirlo con el error
-    guardarPin(estado.pin);
-    mostrarAcceso(quien);
-    entrar();
-  } catch (err) {
-    if (err.message !== "401") $("pin-error").textContent = "No se pudo validar el PIN: " + err.message;
-  }
-});
+if ($("form-login")) {
+  $("form-login").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const usuario = $("usuario").value.trim();
+    const password = $("password").value.trim();
+    if ($("login-error")) $("login-error").textContent = "";
+    if ($("btn-login")) $("btn-login").disabled = true;
+    prepararAvisos();
+    try {
+      const r = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usuario, password }),
+      });
+      const datos = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        if ($("login-error")) $("login-error").textContent = datos.error || "Usuario o contraseña incorrectos";
+        return;
+      }
+      estado.pin = null; guardarPin(null);
+      estado.token = datos.token;
+      guardarToken(datos.token);
+      mostrarAcceso({ nombre: datos.nombre });
+      entrar();
+    } catch (err) {
+      if ($("login-error")) $("login-error").textContent = "No se pudo iniciar sesión: " + err.message;
+    } finally {
+      if ($("btn-login")) $("btn-login").disabled = false;
+    }
+  });
+}
+
+for (const chip of document.querySelectorAll(".chip-demo")) {
+  chip.addEventListener("click", () => {
+    if ($("usuario")) $("usuario").value = chip.dataset.usr || "";
+    if ($("password")) $("password").value = chip.dataset.pass || "123456";
+    if ($("form-login")) $("form-login").requestSubmit();
+  });
+}
+
 $("firmar-todos").addEventListener("click", () => firmar(estado.pendientes.map((p) => p.pedido_id)));
 document.addEventListener("click", prepararAvisos, { once: true });
 
 estado.token = estado.token || leerToken();   // al armar estado la clave del token todavía no existía
-if (estado.token) api("/api/accesos/yo").then((q) => { mostrarAcceso(q); entrar(); }).catch(() => {});
-else if (estado.pin) api("/api/pin/verificar", {}).then((q) => { mostrarAcceso(q); entrar(); }).catch(() => {});
+if (estado.token) api("/api/accesos/yo").then((q) => { mostrarAcceso(q); entrar(); }).catch(() => pedirPin());
+else if (estado.pin) api("/api/pin/verificar", {}).then((q) => { mostrarAcceso(q); entrar(); }).catch(() => pedirPin());
 else pedirPin();
 setInterval(refrescar, REFRESCO_MS);

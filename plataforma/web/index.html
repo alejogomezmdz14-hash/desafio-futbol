@@ -27,14 +27,30 @@
   </header>
 
   <section class="ingreso" id="ingreso" hidden>
-    <form id="form-pin">
-      <h1>Firma de órdenes de bloqueo</h1>
-      <p>Abrí el link de acceso que te pasó la coordinación. Si sos de la coordinación, ingresá el PIN.</p>
-      <label for="pin">PIN</label>
-      <input id="pin" name="pin" type="password" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" required>
-      <p class="ingreso__error" id="pin-error" role="alert"></p>
-      <button type="submit" class="boton boton--firmar">Entrar</button>
-    </form>
+    <div class="ingreso__tarjeta">
+      <p class="ingreso__sello">PODER JUDICIAL · JUZGADO FEDERAL DE TURNO</p>
+      <h1>Ingreso de Magistrados</h1>
+      <p>Iniciá sesión con tu correo institucional y contraseña para revisar los expedientes y firmar órdenes de bloqueo en vivo.</p>
+
+      <form id="form-login">
+        <div class="ingreso__campo">
+          <label for="usuario">Usuario o correo electrónico</label>
+          <input id="usuario" name="usuario" class="ingreso__input-normal" type="text" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="juez@juzgado.gob.ar" value="juez@juzgado.gob.ar" required>
+        </div>
+
+        <div class="ingreso__campo">
+          <label for="password">Contraseña</label>
+          <input id="password" name="password" class="ingreso__input-normal" type="password" autocomplete="current-password" placeholder="••••••" value="123456" required>
+        </div>
+
+        <p class="ingreso__error" id="login-error" role="alert"></p>
+        <button type="submit" class="boton boton--firmar boton--ancho" id="btn-login">Ingresar al despacho</button>
+      </form>
+
+      <div class="ingreso__demo-ayuda">
+        <span class="ingreso__demo-titulo">Cuenta de prueba para la demo: <code>juez@juzgado.gob.ar</code> · Clave: <code>123456</code></span>
+      </div>
+    </div>
   </section>
 
   <div class="avisos" id="avisos" aria-live="assertive"></div>

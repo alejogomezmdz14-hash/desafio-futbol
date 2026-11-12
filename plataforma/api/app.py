@@ -44,11 +44,16 @@ app.include_router(_router_demo)
 from plataforma.api.accesos import firmante, router as _router_accesos  # noqa: E402
 app.include_router(_router_accesos)
 
+# T14: login de jueces con usuario/correo y contraseña.
+from plataforma.api.login import router as _router_login  # noqa: E402
+app.include_router(_router_login)
+
 
 @app.on_event("startup")
 def _startup() -> None:
     try:
         db.crear_esquema()
+        db.asegurar_usuarios_demo()
     except Exception:
         pass
 

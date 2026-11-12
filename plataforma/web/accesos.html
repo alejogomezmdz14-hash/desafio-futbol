@@ -38,6 +38,21 @@
     </label>
   </section>
 
+  <form class="tarjeta" id="form-usuario">
+    <h2>Usuarios de jueces (correo y contraseña)</h2>
+    <label class="campo">Usuario o correo electrónico
+      <input id="usr-id" placeholder="laura@juzgado.gob.ar" maxlength="80" required>
+    </label>
+    <label class="campo">Nombre del juez
+      <input id="usr-nombre" placeholder="Dra. Laura Ficticia" maxlength="60" required>
+    </label>
+    <label class="campo">Contraseña (6 caracteres o más, ej: 123456)
+      <input type="password" id="usr-pass" placeholder="123456" minlength="6" required>
+    </label>
+    <button type="submit" class="boton boton--firmar boton--ancho">Guardar usuario de juez</button>
+    <p class="msg" id="msg-usuario" aria-live="polite"></p>
+  </form>
+
   <form class="tarjeta" id="form-crear">
     <h2>Crear un acceso</h2>
     <label class="campo">Nombre del juez
@@ -82,6 +97,21 @@ async function llamar(ruta, cuerpo) {
   try { sessionStorage.setItem("coord_pin", pin); } catch (e) {}
   return d;
 }
+
+$("form-usuario").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const msg = $("msg-usuario"); msg.className = "msg"; msg.textContent = "Guardando usuario…";
+  try {
+    const d = await llamar("/api/usuarios", {
+      usuario: $("usr-id").value,
+      nombre: $("usr-nombre").value,
+      password: $("usr-pass").value,
+    });
+    msg.className = "msg ok";
+    msg.textContent = `Usuario ${d.usuario} (${d.nombre}) listo para entrar en la pantalla del juez.`;
+    $("usr-pass").value = "";
+  } catch (e) { msg.className = "msg error"; msg.textContent = e.message; }
+});
 
 $("form-crear").addEventListener("submit", async (ev) => {
   ev.preventDefault();

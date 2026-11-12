@@ -74,3 +74,11 @@ CREATE TABLE IF NOT EXISTS firmas (
 CREATE TABLE IF NOT EXISTS ajustes (
   clave TEXT PRIMARY KEY, valor TEXT NOT NULL
 );
+
+-- Usuarios de jueces para login con usuario/correo y contraseña (T14).
+CREATE TABLE IF NOT EXISTS usuarios (
+  usuario       TEXT PRIMARY KEY,
+  nombre        TEXT NOT NULL,
+  password_hash TEXT NOT NULL,
+  creado_ts     TEXT NOT NULL
+);
