@@ -51,24 +51,27 @@ Va con las **7 diapositivas** del deck [El VAR de la piratería](https://claude.
 > "Por eso hicimos **el VAR de la piratería**. Igual que el VAR: la jugada llega grabada, el juez la mira, cobra, y la decisión vale en toda la cancha al mismo tiempo.
 > La plataforma encuentra la página trucha y arma la prueba sola. Al juez de turno le llega al celular y firma con un toque. La orden llega a **todas** las empresas de internet a la vez. Y como una tarjeta, **vale para ese partido**: con el pitazo final, el bloqueo se apaga solo."
 
-### Diapositiva 4 · La app: el celular del juez (1:10–1:45)
-**En pantalla:** captura real del celular con el pedido de `s1.pelotaya.test` y el botón "Firmar los 3 pedidos". Si da el tiempo de edición, acá se corta a la grabación de la app en vivo.
-> "Así lo ve el juez. Le vibra el celular: apareció una página trucha. La app le dice tres cosas, en criollo: **por qué es nuestro partido** — lo prueba la firma invisible que va dentro de la imagen —, **qué se bloquea** en cada empresa, y **hasta cuándo**: hasta el final del partido, después se levanta solo.
-> El juez lo lee, y firma con un toque."
+### Diapositiva 4 · La app en vivo (1:10–1:45)
+**En pantalla:** video real de la app del juez funcionando (31 s, arranca solo al llegar a la diapositiva; archivo `entrega/app-en-vivo.mp4`). Se ve el reloj del partido corriendo, los pedidos que llegan (minuto 3, 7, 9), el toque en "Firmar los 3 pedidos" y las casillas de cada empresa pasando a verde, con Cumbre reintentando. Al lado, cuatro pasos numerados que acompañan lo que se ve.
+> "Así lo ve el juez, mientras corre el partido. Minuto 3: le vibra el celular, apareció una página trucha. La app ya armó la prueba: **por qué es nuestro partido** — lo prueba la firma invisible que va dentro de la imagen —, **qué se bloquea** en cada empresa y **hasta cuándo**.
+> Van llegando más. El juez firma los tres con **un toque**.
+> Y miren: cada empresa contesta. En verde, ya bloqueó. Esta falló, y la plataforma reintentó sola."
 
-### Diapositiva 5 · La app: llega a todas, sin romper nada (1:45–2:20)
-**En pantalla:** a la izquierda, el pedido de `live.golazo-libre.test` (servidor compartido con 11 sitios); a la derecha, las órdenes con una casilla por empresa, en verde o amarillo, y Cumbre en el intento 2.
-> "Esta otra página trucha vive en un edificio con 11 vecinos que no hicieron nada. Cortar la dirección del servidor es cortarle la luz a todo el edificio. Nosotros apagamos solo su departamento: bloqueamos el nombre de esa página.
-> Y la orden llega a todas las empresas a la vez. Cada una contesta: verde, ya bloqueó. Esta falló, y la plataforma reintentó sola. Esta otra es chiquita y solo sabe bloquear nombres: le mandamos lo que puede hacer."
+*(La narración va al ritmo del video: "un toque" cae cerca del segundo 15, cuando se ve el círculo amarillo sobre el botón.)*
 
-### Diapositiva 6 · El resultado (2:20–2:40)
+### Diapositiva 5 · Sin romper nada (1:45–2:10)
+**En pantalla:** a la izquierda, el pedido de `live.golazo-libre.test` (servidor compartido con 11 sitios); a la derecha, las órdenes con una casilla por empresa.
+> "Y no rompe nada. Esta página trucha vive en un edificio con 11 vecinos que no hicieron nada. Cortar la dirección del servidor es cortarle la luz a todo el edificio. Nosotros apagamos solo su departamento: bloqueamos el nombre de esa página.
+> Y a la cooperativa más chica, que solo sabe bloquear nombres, le mandamos lo que puede hacer."
+
+### Diapositiva 6 · El resultado (2:10–2:35)
 **En pantalla:** 92 % → 3 %, y al lado la captura del registro público.
 > "Lo probamos en el simulador oficial del desafío. Con la solución básica que traía el desafío, **el 92 % de la gente veía el partido pirata igual**. Con la nuestra, **el 3 %**. Las 7 páginas truchas bloqueadas, en menos de un minuto cada una, y **cero** páginas inocentes rotas. Y todo queda en un registro público: qué se bloqueó, por orden de qué juez y hasta cuándo."
 
 *(Números del partido de práctica, igual que en el guion anterior. Si la corrida del final da otros, se cambian acá y en la diapositiva 6.)*
 
-### Diapositiva 7 · Quién paga y cierre (2:40–3:00)
-**En pantalla:** "Hoy la piratería juega sin árbitro. Nosotros le pusimos uno." Abajo, los nombres y el link.
+### Diapositiva 7 · Quién paga y cierre (2:35–3:00)
+**En pantalla:** "Hoy la piratería juega sin árbitro. Nosotros le pusimos uno." Abajo, el link de la plataforma.
 > "Lo paga el que pierde la plata: los dueños de los derechos del fútbol. Para el juez y para las empresas de internet es gratis. Para arrancar alcanza con un partido de prueba de la liga.
 > Hoy la piratería juega sin árbitro. Nosotros le pusimos uno: rápido, justo, y que llega a todos. Somos Alejo, Selene, Luciano, Rocío y Nahuel."
 
