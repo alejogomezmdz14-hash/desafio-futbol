@@ -30,43 +30,52 @@ Los números salen solo del verificador oficial. Hoy son los del partido de prá
 
 ## Pitch vendible (3 minutos) — ESTE es el que se dice
 
-### 1. Gancho (0:00–0:20)
-*(Es un video grabado: nada de pedirle cosas al público. Se habla en "nosotros", a cámara.)*
+Va con las **7 diapositivas** del deck [El VAR de la piratería](https://claude.ai/artifact/MvZ8ynNFJqG7gz2Kdtq2wf) (las mismas frases están en las notas de cada diapositiva). Es un video grabado: se habla en "nosotros", a cámara o en voz en off, nada de pedirle cosas al público.
+
+### Diapositiva 1 · Gancho (0:00–0:20)
+**En pantalla:** "Todos nosotros, alguna vez, vimos un partido en una página trucha." Al pie: 14,3 M de usuarios piratas por mes y ~300 páginas truchas bloqueadas.
 > "Todos nosotros, alguna vez, vimos un partido en una página trucha. No venimos a señalar a nadie. Pero esa página 'gratis' nos sale cara: la plata de ese partido no le llega a nuestro club, y muchas de esas páginas, encima, se quedan con los datos de nuestra tarjeta.
 > El problema no es el que mira. Es la página. Y hoy, cuando la Justicia intenta cortarla, llega tarde."
 
-*(Fuente: la Justicia bajó ~300 páginas de fútbol pirata, clones de Fútbol Libre, que robaban datos bancarios — `reports/` §1.)*
+*(Fuentes: ASIET 2023 para los 14,3 M; Alianza 2026 para las ~300 páginas que robaban datos bancarios — `reports/` §1.)*
 
-### 2. El problema: tres problemas muy concretos (0:15–0:50)
-> "¿Por qué llega tarde? Porque la orden de un juez pasa de mano en mano: fiscalía, juzgado, el ENACOM, las cámaras, y recién ahí más de mil empresas de internet. El partido dura dos horas. La página pirata se muda de dirección en minutos. Eso genera tres problemas:
-> **Uno: llega tarde.** Cuando se aplica el bloqueo, la página ya se mudó.
-> **Dos: llega a medias.** Las empresas grandes bloquean; la cooperativa de un pueblo de la Puna ni se entera.
-> **Tres: rompe cosas.** Si bloqueás mal, se cae también la página de la panadería del barrio que vivía en el mismo servidor. Y nadie sabe quién bloqueó qué, ni hasta cuándo."
+### Diapositiva 2 · El problema (0:20–0:50)
+**En pantalla:** la cadena Fiscalía → Juzgado → ENACOM → Cámaras → +1.000 empresas de internet, y abajo los tres problemas.
+> "¿Por qué llega tarde? Porque la orden de un juez pasa de mano en mano: fiscalía, juzgado, el ENACOM, las cámaras, y recién ahí más de mil empresas de internet. Eso genera tres problemas muy concretos.
+> **Uno: llega tarde.** El partido dura dos horas; la página trucha se muda en minutos.
+> **Dos: llega a medias.** Las grandes bloquean; la cooperativa de un pueblo de la Puna ni se entera.
+> **Tres: rompe cosas.** Se cae también la página de la panadería del barrio que vivía en el mismo servidor. Y nadie sabe quién bloqueó qué, ni hasta cuándo."
 
-### 3. La solución (0:50–1:10)
+### Diapositiva 3 · La solución (0:50–1:10)
+**En pantalla:** "El VAR de la piratería" (fondo amarillo) y los 4 pasos.
 > "Por eso hicimos **el VAR de la piratería**. Igual que el VAR: la jugada llega grabada, el juez la mira, cobra, y la decisión vale en toda la cancha al mismo tiempo.
-> La plataforma encuentra la página pirata y arma la prueba sola. Al juez de turno le llega al celular y firma con un toque. La orden llega a **todas** las empresas de internet a la vez, de la más grande a la más chica, y cada una contesta 'listo'.
-> Y como una tarjeta, **vale para ese partido**: con el pitazo final, el bloqueo se apaga solo."
+> La plataforma encuentra la página trucha y arma la prueba sola. Al juez de turno le llega al celular y firma con un toque. La orden llega a **todas** las empresas de internet a la vez. Y como una tarjeta, **vale para ese partido**: con el pitazo final, el bloqueo se apaga solo."
 
-### 4. Demo (1:10–2:20)
-Grabada en pantalla: el celular del juez y la plataforma. Una voz en off narra con frases cortas, sin tecnicismos:
-1. **"Le vibra el celular al juez."** Llega `s1.pelotaya.test`. Leer las cuatro líneas en criollo: "Es nuestro partido, lo dice la firma invisible de la imagen. El video sale de acá. Se bloquea esto. Hasta el final del partido."
-2. **El edificio.** Pedido de `live.golazo-libre.test`: "Esta página vive en un edificio con 11 vecinos que no hicieron nada. Cortar la dirección es cortarle la luz a todo el edificio. Nosotros apagamos solo su departamento: bloqueamos el nombre."
-3. **No se equivoca.** "Este canal tiene los derechos y pasa el partido legalmente: no lo toca."
-4. **Un toque, todos en verde.** Firmar los N pedidos. "Esta empresa falló: la plataforma reintentó sola. Esta otra es chiquita y solo sabe bloquear nombres: le mandamos lo que puede hacer."
-5. **Cambio de turno, minuto 50** *(cortar si vamos justos de tiempo)*. "Cambia el juez de turno: el nuevo confirma con un toque."
-6. **Nadie puede trucar la prueba.** Tocar una línea del registro y correr la verificación: "Si alguien cambia una coma, salta la alarma en la línea exacta."
+### Diapositiva 4 · La app: el celular del juez (1:10–1:45)
+**En pantalla:** captura real del celular con el pedido de `s1.pelotaya.test` y el botón "Firmar los 3 pedidos". Si da el tiempo de edición, acá se corta a la grabación de la app en vivo.
+> "Así lo ve el juez. Le vibra el celular: apareció una página trucha. La app le dice tres cosas, en criollo: **por qué es nuestro partido** — lo prueba la firma invisible que va dentro de la imagen —, **qué se bloquea** en cada empresa, y **hasta cuándo**: hasta el final del partido, después se levanta solo.
+> El juez lo lee, y firma con un toque."
 
-### 5. El resultado: un número que se entiende (2:20–2:40)
-> "Lo probamos en el simulador oficial del desafío. Con la solución básica que traía el desafío, **el 92 % de la gente veía el partido pirata igual**. Con la nuestra, **el 3 %**. Las 7 páginas piratas bloqueadas, en todas las empresas, en menos de un minuto cada una. Y **cero** páginas inocentes rotas."
+### Diapositiva 5 · La app: llega a todas, sin romper nada (1:45–2:20)
+**En pantalla:** a la izquierda, el pedido de `live.golazo-libre.test` (servidor compartido con 11 sitios); a la derecha, las órdenes con una casilla por empresa, en verde o amarillo, y Cumbre en el intento 2.
+> "Esta otra página trucha vive en un edificio con 11 vecinos que no hicieron nada. Cortar la dirección del servidor es cortarle la luz a todo el edificio. Nosotros apagamos solo su departamento: bloqueamos el nombre de esa página.
+> Y la orden llega a todas las empresas a la vez. Cada una contesta: verde, ya bloqueó. Esta falló, y la plataforma reintentó sola. Esta otra es chiquita y solo sabe bloquear nombres: le mandamos lo que puede hacer."
 
-*(Mismos números que la sección 4 del guion anterior; si la corrida del final cambia, se cambian acá.)*
+### Diapositiva 6 · El resultado (2:20–2:40)
+**En pantalla:** 92 % → 3 %, y al lado la captura del registro público.
+> "Lo probamos en el simulador oficial del desafío. Con la solución básica que traía el desafío, **el 92 % de la gente veía el partido pirata igual**. Con la nuestra, **el 3 %**. Las 7 páginas truchas bloqueadas, en menos de un minuto cada una, y **cero** páginas inocentes rotas. Y todo queda en un registro público: qué se bloqueó, por orden de qué juez y hasta cuándo."
 
-### 6. Quién paga (2:40–2:52)
-> "Lo paga el que pierde la plata: los dueños de los derechos del fútbol. Para el juez y para las empresas de internet es gratis. Para arrancar alcanza con un partido de prueba de la liga."
+*(Números del partido de práctica, igual que en el guion anterior. Si la corrida del final da otros, se cambian acá y en la diapositiva 6.)*
 
-### 7. Cierre (2:52–3:00)
-> "Hoy la piratería juega sin árbitro. Nosotros le pusimos uno: rápido, justo, y que llega a todos. Somos Alejo, Selene, Luciano, Rocío y Nahuel."
+### Diapositiva 7 · Quién paga y cierre (2:40–3:00)
+**En pantalla:** "Hoy la piratería juega sin árbitro. Nosotros le pusimos uno." Abajo, los nombres y el link.
+> "Lo paga el que pierde la plata: los dueños de los derechos del fútbol. Para el juez y para las empresas de internet es gratis. Para arrancar alcanza con un partido de prueba de la liga.
+> Hoy la piratería juega sin árbitro. Nosotros le pusimos uno: rápido, justo, y que llega a todos. Somos Alejo, Selene, Luciano, Rocío y Nahuel."
+
+### Lo que quedó afuera del pitch (va en el video de demo o en las preguntas)
+- El canal con derechos que la plataforma no bloquea (Canal Norte).
+- El cambio de turno del minuto 50.
+- La prueba que no se puede trucar (alterar el registro y que salte la alarma).
 
 ---
 
