@@ -30,13 +30,15 @@ Los números salen solo del verificador oficial. Hoy son los del partido de prá
 
 ## Pitch vendible (3 minutos) — ESTE es el que se dice
 
-### 1. Gancho (0:00–0:15)
-> "Levanten la mano los que alguna vez vieron un partido en una página trucha. … Tranquilos, no somos la policía. El problema no son ustedes: son las páginas. Y muchas de esas páginas, encima, te roban los datos de la tarjeta."
+### 1. Gancho (0:00–0:20)
+*(Es un video grabado: nada de pedirle cosas al público. Se habla en "nosotros", a cámara.)*
+> "Todos nosotros, alguna vez, vimos un partido en una página trucha. No venimos a señalar a nadie. Pero esa página 'gratis' nos sale cara: la plata de ese partido no le llega a nuestro club, y muchas de esas páginas, encima, se quedan con los datos de nuestra tarjeta.
+> El problema no es el que mira. Es la página. Y hoy, cuando la Justicia intenta cortarla, llega tarde."
 
 *(Fuente: la Justicia bajó ~300 páginas de fútbol pirata, clones de Fútbol Libre, que robaban datos bancarios — `reports/` §1.)*
 
 ### 2. El problema: tres problemas muy concretos (0:15–0:50)
-> "Hoy, para cortar un partido pirata, la orden de un juez pasa de mano en mano: fiscalía, juzgado, el ENACOM, las cámaras, y recién ahí más de mil empresas de internet. El partido dura dos horas. La página pirata se muda de dirección en minutos. Eso genera tres problemas:
+> "¿Por qué llega tarde? Porque la orden de un juez pasa de mano en mano: fiscalía, juzgado, el ENACOM, las cámaras, y recién ahí más de mil empresas de internet. El partido dura dos horas. La página pirata se muda de dirección en minutos. Eso genera tres problemas:
 > **Uno: llega tarde.** Cuando se aplica el bloqueo, la página ya se mudó.
 > **Dos: llega a medias.** Las empresas grandes bloquean; la cooperativa de un pueblo de la Puna ni se entera.
 > **Tres: rompe cosas.** Si bloqueás mal, se cae también la página de la panadería del barrio que vivía en el mismo servidor. Y nadie sabe quién bloqueó qué, ni hasta cuándo."
@@ -46,8 +48,8 @@ Los números salen solo del verificador oficial. Hoy son los del partido de prá
 > La plataforma encuentra la página pirata y arma la prueba sola. Al juez de turno le llega al celular y firma con un toque. La orden llega a **todas** las empresas de internet a la vez, de la más grande a la más chica, y cada una contesta 'listo'.
 > Y como una tarjeta, **vale para ese partido**: con el pitazo final, el bloqueo se apaga solo."
 
-### 4. Demo en vivo (1:10–2:20)
-Una persona maneja el celular del juez, proyectado. Otra narra. Frases cortas, sin tecnicismos:
+### 4. Demo (1:10–2:20)
+Grabada en pantalla: el celular del juez y la plataforma. Una voz en off narra con frases cortas, sin tecnicismos:
 1. **"Le vibra el celular al juez."** Llega `s1.pelotaya.test`. Leer las cuatro líneas en criollo: "Es nuestro partido, lo dice la firma invisible de la imagen. El video sale de acá. Se bloquea esto. Hasta el final del partido."
 2. **El edificio.** Pedido de `live.golazo-libre.test`: "Esta página vive en un edificio con 11 vecinos que no hicieron nada. Cortar la dirección es cortarle la luz a todo el edificio. Nosotros apagamos solo su departamento: bloqueamos el nombre."
 3. **No se equivoca.** "Este canal tiene los derechos y pasa el partido legalmente: no lo toca."
