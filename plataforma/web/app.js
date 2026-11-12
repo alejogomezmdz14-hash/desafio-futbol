@@ -22,7 +22,11 @@ function leerToken() { try { return localStorage.getItem(CLAVE_TOKEN); } catch {
 function guardarToken(t) { try { t ? localStorage.setItem(CLAVE_TOKEN, t) : localStorage.removeItem(CLAVE_TOKEN); } catch { /* sin storage */ } }
 (function tomarTokenDelLink() {
   const t = new URLSearchParams(location.search).get("t");
-  if (t) { guardarToken(t); history.replaceState(null, "", location.pathname); }   // el token no queda a la vista
+  if (t) {
+    guardarToken(t);
+    if (typeof estado !== "undefined") { estado.token = t; estado.pin = null; }   // estado ya se armó antes de leer el link
+    history.replaceState(null, "", location.pathname);   // el token no queda a la vista
+  }
 })();
 function mostrarAcceso(datos) {
   let el = document.getElementById("acceso");
@@ -406,6 +410,7 @@ $("form-pin").addEventListener("submit", async (ev) => {
 $("firmar-todos").addEventListener("click", () => firmar(estado.pendientes.map((p) => p.pedido_id)));
 document.addEventListener("click", prepararAvisos, { once: true });
 
+estado.token = estado.token || leerToken();   // al armar estado la clave del token todavía no existía
 if (estado.token) api("/api/accesos/yo").then((q) => { mostrarAcceso(q); entrar(); }).catch(() => {});
 else if (estado.pin) api("/api/pin/verificar", {}).then((q) => { mostrarAcceso(q); entrar(); }).catch(() => {});
 else pedirPin();

@@ -90,7 +90,7 @@ $("form-crear").addEventListener("submit", async (ev) => {
     const d = await llamar("/api/accesos", { nombre: $("nombre").value, horas: Number($("horas").value) });
     const hasta = new Date(d.vence_epoch * 1000).toLocaleString("es-AR", { weekday: "long", hour: "2-digit", minute: "2-digit" });
     $("link").value = d.link; $("caja-link").hidden = false;
-    msg.className = "msg ok"; msg.textContent = `Listo. Pasale este link a ${d.nombre}. Funciona hasta el ${hasta}.`;
+    msg.className = "msg ok"; msg.textContent = `Listo. Pasale este link a ${d.nombre}. Funciona hasta el ${hasta.replace(/\.$/, "")}.`;
   } catch (e) { msg.className = "msg error"; msg.textContent = e.message; }
 });
 
