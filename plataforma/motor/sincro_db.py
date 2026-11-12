@@ -9,10 +9,15 @@ Reglas (contratos §10, decisiones 15 a 19):
 """
 import json
 import os
+import threading
+import time
+import traceback
 from typing import Dict, Optional
 
 from plataforma import db
 from plataforma.contratos import json_canonico
+
+ESPERA_SINCRO_S = 0.3
 
 
 class SincroDB:
@@ -35,26 +40,56 @@ class SincroDB:
 
     # --- motor -> base ----------------------------------------------------------------------
 
+    # --- hilo propio: la base nunca frena la vuelta del motor ----------------------------------
+    # Contra Neon cada consulta tarda 50-200 ms; hecha dentro de la vuelta, a x30 eran minutos de partido
+    # de demora por bloqueo. Ahora el motor detecta y despacha solo, y este hilo sube y baja cambios en paralelo.
+
+    def arrancar(self) -> None:
+        self._hilo = threading.Thread(target=self._bucle, name="sincro-db", daemon=True)
+        self._hilo.start()
+
+    def _una_vuelta(self) -> None:
+        try:
+            self.traer()
+            self.empujar()
+        except Exception:   # un corte de la base no puede frenar el partido: se reintenta en la próxima
+            traceback.print_exc()
+
+    def _bucle(self) -> None:
+        while not self.motor.terminado:
+            self._una_vuelta()
+            time.sleep(ESPERA_SINCRO_S)
+        self._una_vuelta()   # última subida: estado final, órdenes vencidas y cierre de la auditoría
+
+    def esperar(self, timeout: float = 120) -> None:
+        if getattr(self, "_hilo", None):
+            self._hilo.join(timeout)
+
     def empujar(self) -> None:
         m = self.motor
         estado = m.estado_api()
+        with m.lock:   # foto del estado bajo el candado; las escrituras van afuera para no frenar al motor
+            casos = [dict(c) for c in m.cerebro.casos()]
+            expedientes = list(m.expedientes.items())
+            pedidos = [(k, dict(p), m.resumenes.get(k), k in m.despachados) for k, p in m.pedidos.items()
+                       if k not in self._pedidos_subidos]
+            reclamos = [dict(r) for r in m.reclamos.values()]
         db.guardar_estado_partido(self.pid, estado)
-        for caso in m.cerebro.casos():
+        for caso in casos:
             if self._cambio(f"caso:{caso['caso_id']}", caso):
                 db.guardar("casos", self.pid, caso["caso_id"], caso)
-        for eid, exp in list(m.expedientes.items()):
+        for eid, exp in expedientes:
             if self._cambio(f"exp:{eid}", {"h": exp["hash"]}):
                 db.guardar("expedientes", self.pid, eid, exp)
-        for pid_, p in list(m.pedidos.items()):
-            if pid_ not in self._pedidos_subidos:
-                db.guardar("pedidos", self.pid, pid_, dict(p, resumen=m.resumenes[pid_]), estado=p["estado"],
-                           juez_id=p["juez_id"], juzgado_id=p["juzgado_id"], decidido_min=p["decidido_min"],
-                           motivo_rechazo=p["motivo_rechazo"], despachado=pid_ in m.despachados)
-                self._pedidos_subidos.add(pid_)
+        for pid_, p, resumen, despachado in pedidos:
+            db.guardar("pedidos", self.pid, pid_, dict(p, resumen=resumen), estado=p["estado"],
+                       juez_id=p["juez_id"], juzgado_id=p["juzgado_id"], decidido_min=p["decidido_min"],
+                       motivo_rechazo=p["motivo_rechazo"], despachado=despachado)
+            self._pedidos_subidos.add(pid_)
         for o in m.despacho.vista():
             if self._cambio(f"ord:{o['orden_id']}", o):
                 db.guardar("ordenes", self.pid, o["orden_id"], o)
-        for r in list(m.reclamos.values()):
+        for r in reclamos:
             if self._cambio(f"rec:{r['reclamo_id']}", r):
                 db.guardar("reclamos", self.pid, r["reclamo_id"], r)
         self._subir_auditoria()

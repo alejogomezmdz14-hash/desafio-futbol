@@ -28,6 +28,12 @@ _JUZGADO_DE_JUEZ: Dict[str, str] = {
     for juez in juzgado["jueces"]
 }
 
+# Nombres públicos (ficticios) para el registro de transparencia.
+_NOMBRE_JUZGADO: Dict[str, str] = {j["id"]: j["nombre"] for j in EJEMPLO_SIM_JUZGADOS["juzgados"]}
+_NOMBRE_JUEZ: Dict[str, str] = {
+    juez["id"]: juez["nombre"] for j in EJEMPLO_SIM_JUZGADOS["juzgados"] for juez in j["jueces"]
+}
+
 app = FastAPI(title="Plataforma Federal de Órdenes de Bloqueo en Vivo")
 
 # T12: partido de demo online (Vercel Sandbox). Las rutas viven en plataforma/nube/.
@@ -311,6 +317,8 @@ def api_publico(partido_id: Optional[str] = None):
             "hasta_min": o.get("finalizada_min") or o["vence_min"],
             "juzgado_id": o["juzgado_id"],
             "juez_id": o["juez_id"],
+            "juzgado_nombre": _NOMBRE_JUZGADO.get(o["juzgado_id"], o["juzgado_id"]),
+            "juez_nombre": _NOMBRE_JUEZ.get(o["juez_id"], o["juez_id"]),
             "estado": o["estado"],
             "expediente_id": o["expediente_id"],
         }

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14213D">
+  <title>Registro público de bloqueos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilos.css">
+  <style>
+    body { padding-bottom: 32px; }
+    .pub { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+    .pub__intro { color: var(--tinta-suave); margin: 16px 0; max-width: 70ch; }
+    .cifras { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 16px 0 24px; }
+    .cifra { background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--radio); padding: 12px 16px; }
+    .cifra__n { font: 700 2.4rem/1 var(--numeros); font-variant-numeric: tabular-nums; }
+    .cifra__t { color: var(--tinta-suave); font-size: .9rem; }
+    .fila { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.6fr) 120px minmax(0, 1.6fr) 110px; gap: 12px;
+            align-items: center; padding: 12px 16px; background: var(--superficie); border: 1px solid var(--linea);
+            border-radius: var(--radio); margin-bottom: 8px; }
+    .fila--cabeza { background: transparent; border: 0; padding-top: 0; padding-bottom: 4px; color: var(--tinta-suave);
+                    font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+    .objetivo { font: 600 .95rem/1.3 ui-monospace, Consolas, monospace; overflow-wrap: anywhere; }
+    .tipo { display: inline-block; font-size: .75rem; font-weight: 700; padding: 1px 6px; border-radius: 4px;
+            border: 1px solid var(--linea); color: var(--tinta-suave); margin-bottom: 4px; }
+    .juez { font-weight: 600; }
+    .juzgado, .exp { color: var(--tinta-suave); font-size: .85rem; }
+    .rango { font: 600 1.1rem/1.2 var(--numeros); font-variant-numeric: tabular-nums; }
+    .provs { display: flex; flex-wrap: wrap; gap: 4px; }
+    .prov { font-size: .78rem; padding: 2px 6px; border-radius: 4px; background: var(--espera-claro); color: var(--espera); }
+    .prov--aplicada { background: var(--sello-claro); color: var(--sello); }
+    .prov--fallida { background: var(--rechazo-claro); color: var(--rechazo); }
+    .prov--fin { background: var(--fondo); color: var(--tinta-suave); }
+    .estado { font-weight: 700; }
+    .estado--vigente { color: var(--sello); }
+    .estado--en_curso { color: var(--espera); }
+    .estado--vencido, .estado--levantado { color: var(--tinta-suave); }
+    .vacio { color: var(--tinta-suave); }
+    .pie { color: var(--tinta-suave); font-size: .85rem; margin-top: 24px; }
+    @media (max-width: 760px) {
+      .fila { grid-template-columns: 1fr 1fr; }
+      .fila--cabeza { display: none; }
+      .fila > :first-child { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <header class="marcador">
+    <div class="marcador__fila">
+      <p class="minuto"><span id="minuto">0</span><span class="minuto__comilla">'</span></p>
+      <div class="marcador__texto">
+        <p class="partido" id="partido">Registro público de bloqueos</p>
+        <p class="turno">Juez de turno: <strong id="juez">—</strong></p>
+      </div>
+    </div>
+  </header>
+
+  <main class="pub">
+    <p class="pub__intro">Qué se bloqueó, desde cuándo, por orden de qué juez y hasta cuándo. Cada bloqueo tiene una orden judicial
+      firmada y vence solo al terminar el partido. Se actualiza en vivo.</p>
+
+    <section class="cifras" aria-label="Resumen">
+      <div class="cifra"><div class="cifra__n" id="n-vigentes">0</div><div class="cifra__t">bloqueos vigentes</div></div>
+      <div class="cifra"><div class="cifra__n" id="n-total">0</div><div class="cifra__t">bloqueos ordenados</div></div>
+      <div class="cifra"><div class="cifra__n" id="n-jueces">0</div><div class="cifra__t">jueces que firmaron</div></div>
+      <div class="cifra"><div class="cifra__n" id="n-provs">0</div><div class="cifra__t">proveedores que aplicaron</div></div>
+    </section>
+
+    <div class="fila fila--cabeza" aria-hidden="true">
+      <span>Qué se bloquea</span><span>Por orden de</span><span>Desde → hasta</span><span>Proveedores</span><span>Estado</span>
+    </div>
+    <div id="lista"></div>
+    <p class="vacio" id="vacio">Todavía no hay bloqueos ordenados en este partido.</p>
+
+    <p class="pie">Datos ficticios del simulador del hackatón. No se publican capturas, firmas ni datos personales.
+      Minutos de partido. <a href="./">Pantalla del juez</a></p>
+  </main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const ESTADO = { vigente: "Vigente", en_curso: "En curso", vencido: "Vencido", levantado: "Levantado" };
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const min = (m) => (m == null ? "—" : `${Math.round(m)}'`);
+
+function agrupar(entradas) {
+  const grupos = new Map();
+  for (const e of entradas) {
+    const k = `${e.tipo}|${e.objetivo}|${e.expediente_id}`;
+    if (!grupos.has(k)) grupos.set(k, { ...e, provs: new Map() });
+    const g = grupos.get(k);
+    const prev = g.provs.get(e.proveedor_id);
+    if (!prev || (e.desde_min ?? 0) >= (prev.desde_min ?? 0)) g.provs.set(e.proveedor_id, e);
+    g.desde_min = Math.min(g.desde_min ?? Infinity, e.desde_min ?? Infinity);
+  }
+  for (const g of grupos.values()) {
+    const est = [...g.provs.values()].map((p) => p.estado);
+    g.estadoGrupo = est.includes("levantada") ? "levantado"
+      : est.includes("aplicada") ? "vigente"
+      : est.every((e) => e === "vencida") ? "vencido" : "en_curso";
+  }
+  return [...grupos.values()].sort((a, b) => (b.desde_min ?? 0) - (a.desde_min ?? 0));
+}
+
+function claseProv(e) {
+  if (e === "aplicada") return "prov--aplicada";
+  if (e === "fallida") return "prov--fallida";
+  if (e === "vencida" || e === "levantada") return "prov--fin";
+  return "";
+}
+
+async function actualizar() {
+  try {
+    const [est, pub] = await Promise.all([fetch("/api/estado").then((r) => r.json()), fetch("/api/publico").then((r) => r.json())]);
+    $("minuto").textContent = Math.floor(est.minuto_actual || 0);
+    $("partido").textContent = est.finalizado ? "Partido terminado · Registro público" : "Registro público de bloqueos · en vivo";
+    $("juez").textContent = (est.jueces_de_turno || []).join(", ") || "—";
+    const grupos = agrupar(pub.entradas || []);
+    $("vacio").hidden = grupos.length > 0;
+    $("n-total").textContent = grupos.length;
+    $("n-vigentes").textContent = grupos.filter((g) => g.estadoGrupo === "vigente").length;
+    $("n-jueces").textContent = new Set(grupos.map((g) => g.juez_id)).size;
+    $("n-provs").textContent = new Set((pub.entradas || []).map((e) => e.proveedor_id)).size;
+    $("lista").innerHTML = grupos.map((g) => `
+      <article class="fila">
+        <div><span class="tipo">${g.tipo === "ip" ? "IP" : "DOMINIO"}</span><div class="objetivo">${esc(g.objetivo)}</div>
+             <div class="exp">${esc(g.expediente_id)}</div></div>
+        <div><div class="juez">${esc(g.juez_nombre || g.juez_id)}</div><div class="juzgado">${esc(g.juzgado_nombre || g.juzgado_id)}</div></div>
+        <div class="rango">${min(g.desde_min)} → ${min(g.hasta_min)}</div>
+        <div class="provs">${[...g.provs.values()].map((p) =>
+          `<span class="prov ${claseProv(p.estado)}" title="${esc(p.estado)}">${esc(p.proveedor_id)}</span>`).join("")}</div>
+        <div class="estado estado--${g.estadoGrupo}">${ESTADO[g.estadoGrupo]}</div>
+      </article>`).join("");
+  } catch (e) { /* sin conexión: se reintenta en la próxima vuelta */ }
+}
+actualizar();
+setInterval(actualizar, 5000);
+</script>
+</body>
+</html>

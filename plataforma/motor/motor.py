@@ -79,12 +79,16 @@ class Motor:
     def correr(self) -> None:
         self.auditar("motor", "partido_iniciado", {"partido_id": self.partido["id"], "corrida": self.corrida,
                                                    "juez_automatico": self.juez_automatico})
+        if self.sincro:
+            self.sincro.arrancar()          # la base se sincroniza en su propio hilo (sincro_db.py)
         while not self.terminado:
             try:
                 self.vuelta()
             except Exception:  # un error en una vuelta no puede frenar el partido
                 traceback.print_exc()
             time.sleep(ESPERA_S)
+        if self.sincro:
+            self.sincro.esperar()           # última subida a la base antes de salir
 
     def vuelta(self) -> None:
         estado = self._pedir("/estado")
@@ -99,9 +103,6 @@ class Motor:
             self._procesar(d)
         self.desde = lote["minuto_actual"]
         self._leer_reclamos()
-
-        if self.sincro:
-            self.sincro.traer()             # decisiones y solicitudes que llegaron desde la web
 
         if self.juez_automatico:
             if self.de_turno and not self.despacho.turno_ratificado():
@@ -119,8 +120,6 @@ class Motor:
                 self.despachados.add(pid)
                 self.despacho.despachar(p)
         self.despacho.seguir(self.pedidos)
-        if self.sincro:
-            self.sincro.empujar()
 
         if self.minuto >= self.fin + GRACIA_MIN + 0.5:
             self._cerrar()
