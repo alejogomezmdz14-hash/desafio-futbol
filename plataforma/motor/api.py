@@ -54,6 +54,10 @@ def crear_app(motor: Motor, pin: str) -> FastAPI:
             raise HTTPException(404, f"No existe el expediente {expediente_id}")
         return exp
 
+    @app.post("/api/pin/verificar", dependencies=[Depends(exigir_pin)])
+    def verificar_pin():
+        return {"ok": True}
+
     @app.post("/api/pedidos/aprobar", dependencies=[Depends(exigir_pin)])
     def aprobar(cuerpo: dict):
         r = motor.decidir(cuerpo.get("pedido_ids", []), cuerpo.get("juez_id"), "aprobado")

@@ -330,15 +330,20 @@ function entrar() {
   refrescar();
 }
 
-$("form-pin").addEventListener("submit", (ev) => {
+$("form-pin").addEventListener("submit", async (ev) => {
   ev.preventDefault();
-  estado.pin = $("pin").value.trim();
-  guardarPin(estado.pin);
+  estado.pin = $("pin").value.trim().replace(/^["']+|["']+$/g, "");   // por si se pega con las comillas de .env
   prepararAvisos();
-  entrar();
+  try {
+    await api("/api/pin/verificar", {});   // si el PIN está mal, api() vuelve a pedirlo con el error
+    guardarPin(estado.pin);
+    entrar();
+  } catch (err) {
+    if (err.message !== "401") $("pin-error").textContent = "No se pudo validar el PIN: " + err.message;
+  }
 });
 $("firmar-todos").addEventListener("click", () => firmar(estado.pendientes.map((p) => p.pedido_id)));
 document.addEventListener("click", prepararAvisos, { once: true });
 
-if (estado.pin) entrar(); else pedirPin();
+if (estado.pin) api("/api/pin/verificar", {}).then(entrar).catch(() => {}); else pedirPin();
 setInterval(refrescar, REFRESCO_MS);

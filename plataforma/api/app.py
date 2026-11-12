@@ -216,6 +216,12 @@ def _procesar_decision_pedidos(cuerpo: Dict[str, Any], nuevo_estado: str, partid
     return {clave_lista: decididos, "errores": errores, "decidido_min": minuto_actual}
 
 
+@app.post("/api/pin/verificar", dependencies=[Depends(pin_juez)])
+def verificar_pin():
+    """La pantalla del juez valida el PIN al entrar, no recién al firmar."""
+    return {"ok": True}
+
+
 @app.post("/api/pedidos/aprobar", dependencies=[Depends(pin_juez)])
 def api_aprobar(cuerpo: Dict[str, Any], partido_id: Optional[str] = None):
     return _procesar_decision_pedidos(cuerpo, "aprobado", partido_id)
