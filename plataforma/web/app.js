@@ -161,12 +161,26 @@ function renderEstado(e) {
       { id: "sin-juez", titulo: "Sin juez de turno" });
   } else quitarAviso("sin-juez");
 
-  if (!e.simulador_ok) {
-    aviso("La plataforma no recibe datos del partido hace unos segundos. Los pedidos nuevos pueden demorar.", "error",
-      { id: "desconectado", titulo: "Motor desconectado" });
-  } else quitarAviso("desconectado");
+  estado.finalizado = !!e.finalizado;
+  if (e.finalizado) {
+    // Sin partido en juego no hay nada para firmar: se dice claro y se ofrece arrancar uno de práctica.
+    quitarAviso("desconectado");
+    if (!document.querySelector('[data-aviso="sin-partido"]')) {
+      aviso(estado.pin
+        ? "El último partido ya terminó, así que no hay pedidos para firmar. Arrancá uno de práctica para probar: en unos 30 segundos aparecen los pedidos acá."
+        : "El último partido ya terminó, así que no hay pedidos para firmar. Cuando la coordinación arranque el próximo, aparecen acá solos.",
+        "info", { id: "sin-partido", titulo: "No hay partido en juego",
+                  boton: estado.pin ? { texto: "Arrancar partido de práctica", accion: arrancarPractica } : null });
+    }
+  } else {
+    quitarAviso("sin-partido");
+    if (!e.simulador_ok) {
+      aviso("La plataforma no recibe datos del partido hace unos segundos. Los pedidos nuevos pueden demorar.", "error",
+        { id: "desconectado", titulo: "Motor desconectado" });
+    } else quitarAviso("desconectado");
+  }
 
-  if (estado.juez && e.turno_ratificado === false) {
+  if (estado.juez && e.turno_ratificado === false && !e.finalizado) {
     if (!document.querySelector('[data-aviso="traspaso"]')) {
       aviso(`${nombreJuez(estado.juez)}: las órdenes que firmó el turno anterior siguen vigentes. Asumí el turno para ratificarlas; hasta entonces sus reintentos quedan en espera.`,
         "info", { id: "traspaso", titulo: "Cambió el turno", boton: { texto: "Asumir turno y ratificar órdenes", accion: asumirTurno } });
@@ -317,6 +331,20 @@ async function rechazar(ids, motivo) {
   await refrescar();
 }
 
+async function arrancarPractica() {
+  quitarAviso("sin-partido");
+  aviso("Prendiendo el partido de práctica en la nube. Tarda unos segundos.", "info", { id: "arrancando", titulo: "Arrancando…" });
+  try {
+    const r = await api("/api/demo/iniciar", { acelerar: 10, juez_automatico: false });
+    quitarAviso("arrancando");
+    aviso(`Partido de práctica en marcha (dura unos ${Math.round(r.duracion_min)} minutos). En unos 30 segundos aparecen los pedidos.`,
+      "ok", { duracion: 8000, titulo: "Arrancó el partido" });
+  } catch (err) {
+    quitarAviso("arrancando");
+    if (err.message !== "401") aviso(err.message, "error", { duracion: 15000, titulo: "No se pudo arrancar el partido" });
+  }
+}
+
 async function asumirTurno() {
   try {
     const r = await api("/api/turno/asumir", { juez_id: estado.juez });
@@ -337,7 +365,11 @@ async function refrescar() {
     const [e, p, o] = await Promise.all([api("/api/estado"), api("/api/pedidos?estado=pendiente"), api("/api/ordenes")]);
     quitarAviso("sin-red");
     renderEstado(e);
-    renderPedidos(p.pedidos.sort((a, b) => a.creado_min - b.creado_min));
+    // Los pedidos que quedaron sin firmar en un partido terminado ya no se pueden firmar: no se muestran como pendientes.
+    renderPedidos(e.finalizado ? [] : p.pedidos.sort((a, b) => a.creado_min - b.creado_min));
+    $("vacio").textContent = e.finalizado
+      ? "El partido terminó. Los pedidos nuevos aparecen acá cuando arranque el próximo."
+      : "No hay pedidos esperando. Cuando el radar detecte un stream pirata del partido, aparece acá con su evidencia.";
     renderOrdenes(o.ordenes);
   } catch (err) {
     if (err.message !== "401") {
