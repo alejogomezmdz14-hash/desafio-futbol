@@ -148,7 +148,7 @@ Dos corridas del partido de práctica. Cada una tiene su evidencia (expediente c
 - **Video del pitch** (2:58, con subtítulos): [en Google Drive](https://drive.google.com/file/d/13LJJsUij3JoVxd3yyLj61Qy19zkRFPBb/view?usp=sharing), que es el link cargado en Hacki, y el mismo archivo en el repo: [`video-pitch.mp4`](video-pitch.mp4). Los subtítulos sueltos están en [`video-pitch.srt`](video-pitch.srt).
 - [`pitch.md`](pitch.md): guion del pitch y del video de 3 minutos.
 - `propuesta-normativa.md`: 1 página (T08).
-- `expediente-final.json` y `auditoria-final.jsonl`: exportados del partido final (T03).
+- **[`final-01/`](final-01/): el expediente y el registro de auditoría del partido final** (13/11, 11:10 a 11:47), con un resumen en [`final-01/LEEME.md`](final-01/LEEME.md): 8 streams piratas, 8 pedidos firmados por el juez de turno, cambio de turno ratificado, 32 de 32 órdenes aplicadas y vencidas al final, cadena de auditoría íntegra. Las carpetas `practica-*` y `validacion/` son pruebas anteriores con el escenario de práctica.
 
 ## Equipo
 Alejo, Selene y Rocío. Quién hizo qué está en [`coordinacion/equipo.md`](../coordinacion/equipo.md) y en el historial de `coordinacion/tareas/`.

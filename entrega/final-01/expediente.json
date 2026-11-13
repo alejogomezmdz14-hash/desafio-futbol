@@ -1,0 +1,48 @@
+{
+  "expediente_id": "EXP-2026-000001",
+  "partido_id": "final-01",
+  "caso": {
+    "caso_id": "C-001",
+    "host": "sa.futbolpasion.test",
+    "ip": "203.0.113.60",
+    "asn": 64600,
+    "organizacion": "Bruma Hosting Dedicado (ficticio)",
+    "sitio": "futbolpasion.test",
+    "pagina": "https://futbolpasion.test/hoy",
+    "deteccion_ids": [
+      "D-0001"
+    ],
+    "primer_minuto": 2.0,
+    "marca": "LP26-FIN-OFI-S020318",
+    "marca_origen": "Señal oficial del titular (plataforma propia)",
+    "clasificacion": "pirata",
+    "motivo_clasificacion": "Lleva la marca de la señal oficial del partido y este dominio no está autorizado a transmitirla",
+    "dominios_en_ip": [
+      "sa.futbolpasion.test"
+    ],
+    "ip_compartida": false,
+    "tipo_recomendado": "ip",
+    "motivo_tipo": "Todos los dominios de la IP 203.0.113.60 son de futbolpasion.test: se bloquea la IP"
+  },
+  "capturas": [
+    {
+      "deteccion_id": "D-0001",
+      "capturada_min": 2.0,
+      "formato": "mpegts",
+      "duracion_seg": 6,
+      "bytes": 64,
+      "sha256": "c60104faf76e511083ffea258f135c53fd3a8a0b6a6cba7f0353d605cc959ef8"
+    }
+  ],
+  "promocion": [
+    {
+      "red": "x",
+      "url": "https://x.example/futbolpasion_ar/status/9001",
+      "minuto": 1.0
+    }
+  ],
+  "vence_propuesto_min": 105,
+  "creado_min": 2.03,
+  "creado_ts": "2026-11-13T14:10:45.599824+00:00",
+  "hash": "a9b7cb82fe7dbca790cc299365e09167f3db80f0a091087004e61510ee90d868"
+}
